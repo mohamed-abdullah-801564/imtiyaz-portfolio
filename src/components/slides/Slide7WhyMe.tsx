@@ -37,7 +37,7 @@ export const Slide7WhyMe: React.FC<Slide7WhyMeProps> = () => {
   return (
     <section
       id="slide-7-whyme"
-      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start px-5 sm:px-10 lg:px-16 py-14 md:py-0 bg-[#030305]"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-0 md:px-10 lg:px-16 bg-[#030305]"
     >
       {/* Corner Minimal Metadata */}
       <div className="hidden md:flex absolute top-6 left-6 sm:top-8 sm:left-12 items-center gap-3 select-none z-20">
@@ -56,46 +56,46 @@ export const Slide7WhyMe: React.FC<Slide7WhyMeProps> = () => {
       >
         {/* Section Header */}
         <div className="text-center mb-6 sm:mb-8">
-          <h2 className="font-syne font-black text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white tracking-tight uppercase leading-tight max-w-3xl mx-auto">
+          <h2 className="font-syne font-extrabold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-white tracking-tight uppercase leading-tight md:leading-none max-w-3xl mx-auto">
             CREATIVITY + STRATEGY = MEASURABLE GROWTH
           </h2>
-          <p className="font-sans text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto mt-2 leading-relaxed">
+          <p className="font-jakarta font-normal text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto mt-2 leading-relaxed">
             The strategic formula behind high-impact social media, performance ad campaigns, and commercial retainers.
           </p>
         </div>
 
         {/* 3 Advantage Pillar Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-5 w-full">
           {pillars.map((pillar, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.7, delay: 0.6 + (idx * 0.15), ease: [0.16, 1, 0.3, 1] }}
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ duration: 0.7, delay: 0.5 + (idx * 0.15) }}
             >
               <TiltCard
                 max={8}
                 glare={true}
-                className="p-4 sm:p-5 rounded-2xl bg-zinc-950/70 backdrop-blur-md border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
+                className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
               >
                 <div>
-                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3.5 shadow-md group-hover:scale-105 transition-transform">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3 shadow-md group-hover:scale-105 transition-transform">
                     {pillar.icon}
                   </div>
 
-                  <h3 className="font-sans font-bold text-sm sm:text-base text-white tracking-tight leading-snug mb-2 group-hover:text-blue-300 transition-colors">
+                  <h3 className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug group-hover:text-blue-300 transition-colors">
                     {pillar.title}
                   </h3>
 
-                  <p className="font-sans text-xs text-zinc-400 leading-relaxed font-normal mb-4">
+                  <p className="font-jakarta font-normal text-xs text-zinc-400 leading-relaxed mt-1.5 mb-4">
                     {pillar.description}
                   </p>
                 </div>
 
                 <ul className="space-y-1.5 pt-3 border-t border-white/5">
                   {pillar.highlights.map((item, hIdx) => (
-                    <li key={hIdx} className="font-sans text-[11px] text-zinc-400 flex items-center gap-1.5 font-normal">
+                    <li key={hIdx} className="font-jakarta text-[11px] text-zinc-400 flex items-center gap-1.5 font-normal">
                       <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                       <span>{item}</span>
                     </li>

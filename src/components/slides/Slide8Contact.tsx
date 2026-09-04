@@ -41,7 +41,7 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
   return (
     <section
       id="slide-8-contact"
-      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-between overflow-y-auto md:overflow-hidden snap-start px-5 sm:px-10 lg:px-16 py-8 bg-[#030305]"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-between overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-8 md:px-10 lg:px-16 bg-[#030305]"
     >
       {/* Top Header Metadata Bar */}
       <div className="w-full max-w-6xl mx-auto flex items-center justify-between select-none z-20 pt-2">
@@ -80,14 +80,14 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
             }}
           />
 
-          <span className="font-mono text-xs sm:text-sm tracking-[0.35em] text-zinc-400 uppercase font-semibold block mb-2 z-10">
+          <span className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-sm text-zinc-400 block mb-2 z-10">
             Available For New Opportunities
           </span>
 
           {/* Headline "LET'S CREATE." */}
           <h2
             id="contact-headline"
-            className="relative z-10 font-syne font-extrabold text-3xl sm:text-4xl md:text-7xl lg:text-8xl tracking-tight text-white uppercase leading-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.9)]"
+            className="relative z-10 font-syne font-extrabold text-2xl sm:text-3xl md:text-7xl lg:text-8xl tracking-tight text-white uppercase leading-tight md:leading-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.9)]"
             style={{ letterSpacing: '-0.03em' }}
           >
             LET'S CREATE.
@@ -98,7 +98,7 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
             MARKET. GROW.
           </h3>
 
-          <p className="relative z-10 font-sans text-xs sm:text-sm tracking-wider text-zinc-300 max-w-lg mt-3 font-medium">
+          <p className="relative z-10 font-jakarta font-normal text-xs sm:text-sm tracking-wider text-zinc-300 max-w-lg mt-3 font-medium">
             Transforming Creative Ideas into Digital Success
           </p>
         </div>

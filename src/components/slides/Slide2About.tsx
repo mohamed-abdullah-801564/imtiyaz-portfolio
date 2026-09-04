@@ -37,7 +37,7 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
   return (
     <section
       id="slide-2-about"
-      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start px-5 sm:px-10 lg:px-16 py-14 md:py-0 bg-[#030305]"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-0 md:px-10 lg:px-16 bg-[#030305]"
     >
       {/* Corner Minimal Metadata */}
       <div className="hidden md:flex absolute top-6 left-6 sm:top-8 sm:left-12 items-center gap-3 select-none z-20">
@@ -57,13 +57,13 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
         {/* LEFT COLUMN: CUTOUT PORTRAIT OVER BLUE SPOTLIGHT */}
         <div className="flex flex-col items-center lg:items-start shrink-0">
           <div className="mb-4 text-center lg:text-left">
-            <span className="font-mono text-[10px] sm:text-[11px] tracking-[0.2em] text-blue-400 uppercase font-semibold block mb-1">
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-[11px] block mb-1">
               Hello, I am
             </span>
-            <h2 className="font-syne font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-none">
+            <h2 className="font-syne font-extrabold text-2xl sm:text-3xl lg:text-5xl text-white tracking-tight leading-tight md:leading-none">
               {PROFILE_DATA.name}
             </h2>
-            <p className="font-sans text-xs text-zinc-400 mt-1.5 font-medium max-w-xs">
+            <p className="font-jakarta text-[11px] sm:text-xs text-zinc-400 mt-1.5 font-medium max-w-xs">
               {PROFILE_DATA.role}
             </p>
           </div>
@@ -98,18 +98,18 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
         <div className="flex-1 max-w-2xl text-left w-full">
           {/* Bio Headline & Copy */}
           <div className="mb-5 sm:mb-6">
-            <h3 className="text-xl sm:text-2xl font-syne font-extrabold text-white tracking-tight mb-2 flex items-center gap-2">
+            <h3 className="font-syne font-extrabold text-2xl sm:text-3xl text-white tracking-tight leading-tight mb-2 flex items-center gap-2">
               <span>About Me</span>
               <span className="w-2 h-2 rounded-full bg-blue-500" />
             </h3>
-            <p className="font-sans text-xs sm:text-[13px] text-zinc-300 leading-relaxed font-normal">
+            <p className="font-jakarta font-normal text-xs sm:text-[13px] text-zinc-300 leading-relaxed font-normal">
               {PROFILE_DATA.about}
             </p>
           </div>
 
           {/* 2x2 BENTO GRID VALUE PROPOSITION */}
           <div>
-            <h4 className="font-mono text-[10px] sm:text-[11px] tracking-[0.2em] text-zinc-400 uppercase font-semibold mb-3 flex items-center gap-1.5">
+            <h4 className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 mb-3 flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-blue-400" />
               <span>Core Expertise & Focus</span>
             </h4>
@@ -118,24 +118,24 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
               {bentoCards.map((card, idx) => (
                 <motion.div
                   key={idx}
-                  initial={{ opacity: 0, y: 24 }}
+                  initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.15 }}
-                  transition={{ duration: 0.7, delay: 0.6 + (idx * 0.15), ease: [0.16, 1, 0.3, 1] }}
+                  viewport={{ once: true, amount: 0.1 }}
+                  transition={{ duration: 0.7, delay: 0.5 + (idx * 0.15) }}
                 >
                   <TiltCard
                     max={8}
                     glare={true}
-                    className="p-4 sm:p-5 rounded-2xl bg-zinc-950/70 backdrop-blur-md border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 flex flex-col justify-between group h-full"
+                    className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 flex flex-col justify-between group h-full"
                   >
                     <div>
                       <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-md">
                         {card.icon}
                       </div>
-                      <h5 className="font-sans font-bold text-sm sm:text-base text-white tracking-tight leading-snug mb-1 group-hover:text-blue-300 transition-colors">
+                      <h5 className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug group-hover:text-blue-300 transition-colors">
                         {card.title}
                       </h5>
-                      <p className="font-sans text-xs text-zinc-400 leading-relaxed font-normal">
+                      <p className="font-jakarta font-normal text-xs text-zinc-400 leading-relaxed mt-1.5">
                         {card.description}
                       </p>
                     </div>

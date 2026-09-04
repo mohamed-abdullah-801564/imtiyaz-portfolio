@@ -16,7 +16,7 @@ export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
   return (
     <section
       id="slide-5-projects"
-      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start px-5 sm:px-10 lg:px-16 py-14 md:py-0 bg-[#030305]"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-0 md:px-10 lg:px-16 bg-[#030305]"
     >
       {/* Container holding header + grid fitted to viewport height */}
       <motion.div
@@ -33,16 +33,16 @@ export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
               MS
             </div>
             <div>
-              <h2 className="font-syncopate font-bold text-2xl sm:text-3xl md:text-2xl lg:text-3xl text-white tracking-wider uppercase leading-none">
+              <h2 className="font-syne font-extrabold text-2xl sm:text-3xl md:text-2xl lg:text-3xl text-white tracking-tight uppercase leading-tight md:leading-none">
                 MS MAX & CLIENT CAMPAIGNS
               </h2>
-              <p className="font-sans text-xs sm:text-[13px] text-zinc-400 max-w-2xl leading-snug mt-1 font-normal">
+              <p className="font-jakarta font-normal text-xs sm:text-[13px] text-zinc-400 max-w-2xl leading-snug mt-1 font-normal">
                 Creative Design, Ad Creatives & Social Content
               </p>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 font-mono text-[10px] sm:text-[11px] tracking-[0.2em] text-zinc-400 uppercase font-semibold">
+          <div className="hidden sm:flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-[11px]">
             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
             <span>Verified Commercial Work</span>
           </div>
@@ -63,11 +63,11 @@ export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
                 key={project.id}
                 id={`project-item-${idx}`}
                 onClick={() => onSelectProject(project)}
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.7, delay: 0.6 + (idx * 0.15), ease: [0.16, 1, 0.3, 1] }}
-                className="group relative rounded-2xl border border-white/[0.08] hover:border-white/20 bg-zinc-950/70 hover:bg-zinc-900/80 overflow-hidden backdrop-blur-md shadow-2xl hover:-translate-y-1.5 transition-all duration-300 aspect-[4/3] sm:aspect-square md:h-44 cursor-pointer p-2.5 sm:p-3 flex flex-col justify-between"
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{ duration: 0.7, delay: 0.5 + (idx * 0.15) }}
+                className="group relative rounded-2xl border border-white/[0.08] hover:border-white/20 bg-white/[0.03] hover:bg-zinc-900/80 overflow-hidden backdrop-blur-md shadow-2xl hover:-translate-y-1.5 transition-all duration-300 aspect-[4/3] sm:aspect-square md:h-44 cursor-pointer p-2.5 sm:p-3 flex flex-col justify-between"
               >
                 {isWhiteBgLogo ? (
                   /* Inner White Container - Seamless logo fit */
@@ -91,10 +91,10 @@ export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
 
                 {/* Hover Glass Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 z-20 pointer-events-none rounded-2xl">
-                  <span className="text-[10px] font-mono tracking-widest text-zinc-400 group-hover:text-zinc-200 uppercase font-medium block">
+                  <span className="font-jakarta text-[11px] text-zinc-400 group-hover:text-zinc-200 block">
                     {project.client}
                   </span>
-                  <p className="text-xs font-sans font-bold text-white leading-snug mt-0.5 line-clamp-2">
+                  <p className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug mt-1 line-clamp-2">
                     {project.title}
                   </p>
                   <div className="mt-1 flex items-center gap-1.5 text-[11px] font-mono text-zinc-400 group-hover:text-white">

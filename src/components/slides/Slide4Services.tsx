@@ -21,7 +21,7 @@ export const Slide4Services: React.FC<Slide4ServicesProps> = () => {
   return (
     <section
       id="slide-4-services"
-      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start px-5 sm:px-10 lg:px-16 py-14 md:py-0 bg-[#030305]"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-0 md:px-10 lg:px-16 bg-[#030305]"
     >
       {/* Corner Minimal Metadata */}
       <div className="hidden md:flex absolute top-6 left-6 sm:top-8 sm:left-12 items-center gap-3 select-none z-20">
@@ -40,44 +40,44 @@ export const Slide4Services: React.FC<Slide4ServicesProps> = () => {
       >
         {/* Section Header */}
         <div className="text-center mb-6 sm:mb-8">
-          <h2 className="font-syne font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-tight uppercase leading-none">
+          <h2 className="font-syne font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-tight uppercase leading-tight md:leading-none">
             WHAT I DO
           </h2>
-          <p className="font-sans text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto mt-2 leading-relaxed">
+          <p className="font-jakarta font-normal text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto mt-2 leading-relaxed">
             Core digital marketing & design pillars engineered to accelerate brand visibility and drive revenue.
           </p>
         </div>
 
         {/* 4 Core Pillars Grid (2x2 Grid) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-5 w-full">
           {PROFILE_DATA.services.map((service, idx) => (
             <motion.div
               key={service.number}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.7, delay: 0.6 + (idx * 0.15), ease: [0.16, 1, 0.3, 1] }}
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ duration: 0.7, delay: 0.5 + (idx * 0.15) }}
             >
               <TiltCard
                 max={8}
                 glare={true}
-                className="p-5 rounded-2xl bg-zinc-950/70 backdrop-blur-md border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
+                className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-md">
                       {serviceIcons[idx]}
                     </div>
-                    <span className="font-mono text-[10px] sm:text-[11px] tracking-[0.2em] text-zinc-400 uppercase font-semibold group-hover:text-blue-400 transition-colors">
+                    <span className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-[11px] group-hover:text-blue-400 transition-colors">
                       {service.number}
                     </span>
                   </div>
 
-                  <h3 className="font-sans font-bold text-sm sm:text-base text-white tracking-tight leading-snug mb-2 group-hover:text-blue-300 transition-colors">
+                  <h3 className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug group-hover:text-blue-300 transition-colors">
                     {service.title}
                   </h3>
 
-                  <p className="font-sans text-xs text-zinc-400 leading-relaxed font-normal mb-4">
+                  <p className="font-jakarta font-normal text-xs text-zinc-400 leading-relaxed mt-1.5 mb-4">
                     {service.description}
                   </p>
                 </div>
