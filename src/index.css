@@ -123,3 +123,17 @@
   background: radial-gradient(circle at center, transparent 40%, rgba(3, 3, 5, 0.7) 85%, #030305 100%);
   pointer-events: none;
 }
+
+/* Infinite Marquee Scroll Animation */
+@keyframes marquee-scroll {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 24s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}

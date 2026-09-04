@@ -11,6 +11,20 @@ interface Slide3ExperienceProps {
 export const Slide3Experience: React.FC<Slide3ExperienceProps> = () => {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
+  const marqueeItems = [
+    { name: "Photoshop", abbr: "Ps", color: "text-[#31a8ff]", bg: "bg-[#001e36]" },
+    { name: "Illustrator", abbr: "Ai", color: "text-[#ff9a00]", bg: "bg-[#331c00]" },
+    { name: "Premiere Pro", abbr: "Pr", color: "text-[#ea77ff]", bg: "bg-[#2b0036]" },
+    { name: "After Effects", abbr: "Ae", color: "text-[#9999ff]", bg: "bg-[#1b103b]" },
+    { name: "Canva", label: "Canva", color: "text-cyan-400", abbr: "Cv", bg: "bg-cyan-950/60" },
+    { name: "CapCut", label: "CapCut", color: "text-white", abbr: "Cc", bg: "bg-zinc-800" },
+    { name: "Meta Business Suite", label: "Meta Ads", color: "text-blue-400", abbr: "Ma", bg: "bg-blue-950/60" },
+    { name: "Google Ads", label: "Google Ads", color: "text-amber-400", abbr: "Ga", bg: "bg-amber-950/60" },
+    { name: "TikTok Marketing", label: "TikTok", color: "text-pink-400", abbr: "Tt", bg: "bg-pink-950/60" },
+    { name: "HubSpot", label: "HubSpot", color: "text-orange-400", abbr: "Hs", bg: "bg-orange-950/60" },
+    { name: "AI Content Tools", label: "AI Creative", color: "text-emerald-400", abbr: "Ai", bg: "bg-emerald-950/60" }
+  ];
+
   return (
     <section
       id="slide-3-experience"
@@ -42,7 +56,7 @@ export const Slide3Experience: React.FC<Slide3ExperienceProps> = () => {
         </div>
 
         {/* DUAL 3D TILT GLASS CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mb-5 sm:mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mb-3 sm:mb-4">
           {/* CARD A: Education & Credentials */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -141,43 +155,38 @@ export const Slide3Experience: React.FC<Slide3ExperienceProps> = () => {
           </motion.div>
         </div>
 
-        {/* SOFTWARE & MARKETING STACK BADGES */}
+        {/* INFINITE MARQUEE SCROLLER */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.1 }}
           transition={{ duration: 0.7, delay: 0.8 }}
-          className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/20 transition-all duration-300"
+          className="relative w-full overflow-hidden mt-4 sm:mt-6 py-2 select-none"
+          style={{
+            maskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+          }}
         >
-          <h4 className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-[11px] mb-3 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            <span>Software Tools & Marketing Technologies</span>
-          </h4>
-
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Primary Adobe Suite */}
-            {PROFILE_DATA.tools.map((tool) => (
-              <div
-                key={tool.name}
-                title={tool.name}
-                className={`w-9 h-9 rounded-xl ${tool.bg} border ${tool.borderColor} flex items-center justify-center shadow-lg transition-transform hover:scale-105 cursor-default`}
-              >
-                <span className={`text-xs font-syne font-black ${tool.textColor}`}>
-                  {tool.abbr}
-                </span>
-              </div>
-            ))}
-
-            {/* Marketing & Content Badges */}
-            {PROFILE_DATA.secondaryTools.map((tool) => (
-              <div
-                key={tool.name}
-                title={tool.name}
-                className="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-white/20 text-xs font-sans text-zinc-300 flex items-center justify-center transition-all cursor-default shadow-md"
-              >
-                <span className={tool.color}>{tool.label}</span>
-              </div>
-            ))}
+          <div className="animate-marquee">
+            {[...marqueeItems, ...marqueeItems].map((item, idx) => {
+              const displayName = item.label || item.name;
+              const displayAbbr = item.abbr || displayName.slice(0, 2);
+              return (
+                <div
+                  key={idx}
+                  className="h-10 sm:h-12 px-4 sm:px-5 rounded-full bg-white/[0.04] border border-white/[0.08] hover:border-white/20 hover:bg-white/[0.08] backdrop-blur-md flex items-center gap-2.5 shrink-0 transition-all duration-300 shadow-sm mx-1.5 sm:mx-2 cursor-pointer group"
+                >
+                  <div
+                    className={`w-6 h-6 rounded-md flex items-center justify-center font-syne font-black text-[10px] ${item.color} ${item.bg || 'bg-white/10'}`}
+                  >
+                    {displayAbbr}
+                  </div>
+                  <span className="font-jakarta font-semibold text-xs sm:text-sm text-zinc-300 group-hover:text-white tracking-tight">
+                    {displayName}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </motion.div>
       </motion.div>

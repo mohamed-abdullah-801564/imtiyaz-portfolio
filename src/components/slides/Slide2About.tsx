@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { PROFILE_DATA } from '../../data/portfolioData';
-import { TiltCard } from '../ui/be-ui-tilt-card';
+import GradientBlobCard from '../ui/gradient-bold-card';
 import { Target, Compass, TrendingUp, Sparkles } from 'lucide-react';
 
 interface Slide2AboutProps {
@@ -16,21 +16,25 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
       icon: <Target className="w-4 h-4 text-blue-400" />,
       title: "Strategy & Marketing",
       description: "Aligning creative design with market positioning & audience target strategy.",
+      gradient: "from-pink-500 via-red-500 to-yellow-500",
     },
     {
       icon: <Compass className="w-4 h-4 text-cyan-400" />,
       title: "GCC & Oman Depth",
       description: "Deep understanding of regional Middle Eastern consumer behavior & trends.",
+      gradient: "from-cyan-500 via-blue-500 to-purple-600",
     },
     {
       icon: <TrendingUp className="w-4 h-4 text-emerald-400" />,
       title: "Performance & ROI",
       description: "Data-driven Meta & Google ad campaigns engineered for measurable business growth.",
+      gradient: "from-emerald-500 via-teal-400 to-cyan-500",
     },
     {
       icon: <Sparkles className="w-4 h-4 text-purple-400" />,
       title: "Creative & Visuals",
       description: "High-converting ad graphics, promo video reels & brand identity systems.",
+      gradient: "from-purple-500 via-pink-500 to-rose-500",
     },
   ];
 
@@ -114,7 +118,7 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
               <span>Core Expertise & Focus</span>
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
               {bentoCards.map((card, idx) => (
                 <motion.div
                   key={idx}
@@ -122,24 +126,21 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.1 }}
                   transition={{ duration: 0.7, delay: 0.5 + (idx * 0.15) }}
+                  className="h-full"
                 >
-                  <TiltCard
-                    max={8}
-                    glare={true}
-                    className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 flex flex-col justify-between group h-full"
-                  >
+                  <GradientBlobCard blobGradient={card.gradient}>
                     <div>
-                      <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-md">
+                      <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-md">
                         {card.icon}
                       </div>
                       <h5 className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug group-hover:text-blue-300 transition-colors">
                         {card.title}
                       </h5>
-                      <p className="font-jakarta font-normal text-xs text-zinc-400 leading-relaxed mt-1.5">
+                      <p className="font-jakarta font-normal text-xs text-zinc-300 leading-relaxed mt-1.5">
                         {card.description}
                       </p>
                     </div>
-                  </TiltCard>
+                  </GradientBlobCard>
                 </motion.div>
               ))}
             </div>

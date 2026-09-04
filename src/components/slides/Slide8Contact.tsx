@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { PROFILE_DATA } from '../../data/portfolioData';
-import { Mail, MessageCircle, Copy, Check, ArrowUp, Send, Download, Linkedin } from 'lucide-react';
+import AnimatedDock, { DockItemData } from '../ui/animated-dock';
+import { Mail, MessageCircle, Check, ArrowUp, Send, Download, Linkedin } from 'lucide-react';
 
 interface Slide8ContactProps {
   onRestart: () => void;
@@ -38,6 +39,41 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
     }
   };
 
+  const dockItems: DockItemData[] = [
+    {
+      link: `mailto:${PROFILE_DATA.email}`,
+      Icon: <Send className="w-5 h-5 text-blue-400" />,
+      label: "Start a Project",
+      itemClassName: "bg-blue-600/20 hover:bg-blue-600/40 border-blue-500/40 shadow-[0_0_20px_rgba(37,99,235,0.4)]",
+    },
+    {
+      link: PROFILE_DATA.whatsappUrl,
+      target: "_blank",
+      Icon: <MessageCircle className="w-5 h-5 text-emerald-400" />,
+      label: "Chat on WhatsApp",
+      itemClassName: "bg-emerald-600/20 hover:bg-emerald-600/40 border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.4)]",
+    },
+    {
+      onClick: handleDownloadResume,
+      Icon: <Download className="w-5 h-5 text-cyan-400" />,
+      label: copiedText === 'Resume coming soon' ? 'Resume Requested' : 'Download CV',
+      itemClassName: "bg-cyan-600/20 hover:bg-cyan-600/40 border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.4)]",
+    },
+    {
+      link: PROFILE_DATA.linkedinUrl,
+      target: "_blank",
+      Icon: <Linkedin className="w-5 h-5 text-indigo-400" />,
+      label: "LinkedIn Profile",
+      itemClassName: "bg-indigo-600/20 hover:bg-indigo-600/40 border-indigo-500/40 shadow-[0_0_20px_rgba(99,102,241,0.4)]",
+    },
+    {
+      onClick: () => handleCopy(PROFILE_DATA.email, 'Email'),
+      Icon: copiedText === 'Email' ? <Check className="w-5 h-5 text-emerald-400" /> : <Mail className="w-5 h-5 text-purple-400" />,
+      label: copiedText === 'Email' ? 'Email Copied!' : 'Copy Email',
+      itemClassName: copiedText === 'Email' ? "bg-emerald-600/30 border-emerald-400" : "bg-purple-600/20 hover:bg-purple-600/40 border-purple-500/40 shadow-[0_0_20px_rgba(168,85,247,0.4)]",
+    },
+  ];
+
   return (
     <section
       id="slide-8-contact"
@@ -60,7 +96,7 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
         </button>
       </div>
 
-      {/* Main Center Headline & Redesigned Action Buttons */}
+      {/* Main Center Headline & Animated Dock */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -69,7 +105,7 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
         className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center text-center z-10 my-auto py-6 select-none"
       >
         {/* CENTERPIECE TYPOGRAPHY */}
-        <div className="relative select-none flex flex-col items-center mb-8">
+        <div className="relative select-none flex flex-col items-center mb-10">
           {/* Luminous Blue Radial Aura */}
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 sm:w-[500px] sm:h-[260px] rounded-full opacity-85 pointer-events-none"
@@ -103,73 +139,24 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
           </p>
         </div>
 
-        {/* PRIMARY ACTION ROW: Sleek Prominent Action Pills */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-xl mb-5">
-          {/* 1. Start a Project */}
-          <a
-            href={`mailto:${PROFILE_DATA.email}`}
-            id="btn-start-project"
-            className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs sm:text-sm font-bold tracking-wider transition-all flex items-center justify-center gap-2.5 border border-blue-400/40 shadow-[0_0_25px_rgba(37,99,235,0.5)] hover:shadow-[0_0_35px_rgba(37,99,235,0.8)] group cursor-pointer"
-          >
-            <Send className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            <span>Start a Project</span>
-          </a>
+        {/* FEEDBACK TOAST/STATUS BADGE */}
+        <AnimatePresence>
+          {copiedText && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              className="mb-4 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono text-xs flex items-center gap-2 shadow-lg backdrop-blur-md"
+            >
+              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <span>{copiedText === 'Email' ? 'Email copied to clipboard!' : copiedText}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-          {/* 2. Chat on WhatsApp */}
-          <a
-            href={PROFILE_DATA.whatsappUrl}
-            target="_blank"
-            rel="noreferrer"
-            id="btn-chat-whatsapp"
-            className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-emerald-600/20 hover:bg-emerald-600/35 border border-emerald-500/50 backdrop-blur-md text-xs sm:text-sm font-mono font-bold text-emerald-300 hover:text-white transition-all flex items-center justify-center gap-2.5 shadow-xl hover:shadow-emerald-500/20 group cursor-pointer"
-          >
-            <MessageCircle className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-            <span>Chat on WhatsApp</span>
-          </a>
-        </div>
-
-        {/* SECONDARY UTILITY ROW: Minimal Action Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-          {/* Download CV */}
-          <a
-            href={PROFILE_DATA.resumeUrl}
-            download="Mohamed_Imtiaz_Resume.pdf"
-            onClick={handleDownloadResume}
-            id="btn-download-resume"
-            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/12 text-zinc-300 hover:text-white text-xs flex items-center gap-2 transition-colors cursor-pointer border border-white/10 shadow"
-          >
-            <Download className="w-3.5 h-3.5 text-blue-400" />
-            <span>{copiedText === 'Resume coming soon' ? 'Resume Requested' : 'Download CV'}</span>
-          </a>
-
-          {/* LinkedIn Profile */}
-          <a
-            href={PROFILE_DATA.linkedinUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/12 text-zinc-300 hover:text-white text-xs flex items-center gap-2 transition-colors cursor-pointer border border-white/10 shadow"
-          >
-            <Linkedin className="w-3.5 h-3.5 text-blue-400" />
-            <span>LinkedIn</span>
-          </a>
-
-          {/* Copy Email */}
-          <button
-            onClick={() => handleCopy(PROFILE_DATA.email, 'Email')}
-            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/12 text-zinc-300 hover:text-white text-xs flex items-center gap-2 transition-colors cursor-pointer border border-white/10 shadow"
-          >
-            {copiedText === 'Email' ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400 font-semibold">Email Copied!</span>
-              </>
-            ) : (
-              <>
-                <Mail className="w-3.5 h-3.5 text-blue-400" />
-                <span>Copy Email</span>
-              </>
-            )}
-          </button>
+        {/* INTERACTIVE ANIMATED DOCK */}
+        <div className="w-full flex justify-center mt-2 mb-2">
+          <AnimatedDock items={dockItems} />
         </div>
       </motion.div>
 
