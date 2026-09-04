@@ -40,7 +40,7 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
       className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start px-5 sm:px-10 lg:px-16 py-14 md:py-0 bg-[#030305]"
     >
       {/* Corner Minimal Metadata */}
-      <div className="absolute top-6 left-6 sm:top-8 sm:left-12 flex items-center gap-3 select-none z-20">
+      <div className="hidden md:flex absolute top-6 left-6 sm:top-8 sm:left-12 items-center gap-3 select-none z-20">
         <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
           02 // ABOUT & VALUE PROPOSITION
         </span>
@@ -116,24 +116,31 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {bentoCards.map((card, idx) => (
-                <TiltCard
+                <motion.div
                   key={idx}
-                  max={8}
-                  glare={true}
-                  className="p-4 sm:p-5 rounded-2xl bg-zinc-950/70 backdrop-blur-md border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.7, delay: 0.6 + (idx * 0.15), ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <div>
-                    <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-md">
-                      {card.icon}
+                  <TiltCard
+                    max={8}
+                    glare={true}
+                    className="p-4 sm:p-5 rounded-2xl bg-zinc-950/70 backdrop-blur-md border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 flex flex-col justify-between group h-full"
+                  >
+                    <div>
+                      <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-md">
+                        {card.icon}
+                      </div>
+                      <h5 className="font-sans font-bold text-sm sm:text-base text-white tracking-tight leading-snug mb-1 group-hover:text-blue-300 transition-colors">
+                        {card.title}
+                      </h5>
+                      <p className="font-sans text-xs text-zinc-400 leading-relaxed font-normal">
+                        {card.description}
+                      </p>
                     </div>
-                    <h5 className="font-sans font-bold text-sm sm:text-base text-white tracking-tight leading-snug mb-1 group-hover:text-blue-300 transition-colors">
-                      {card.title}
-                    </h5>
-                    <p className="font-sans text-xs text-zinc-400 leading-relaxed font-normal">
-                      {card.description}
-                    </p>
-                  </div>
-                </TiltCard>
+                  </TiltCard>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -141,7 +148,7 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
       </motion.div>
 
       {/* Bottom Minimal Metadata */}
-      <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-12 z-20 select-none text-[10px] sm:text-[11px] font-mono text-zinc-600">
+      <div className="hidden md:block absolute bottom-6 right-6 sm:bottom-8 sm:right-12 z-20 select-none text-[10px] sm:text-[11px] font-mono text-zinc-600">
         02 // ABOUT
       </div>
     </section>

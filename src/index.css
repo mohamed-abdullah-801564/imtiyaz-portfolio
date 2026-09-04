@@ -46,34 +46,40 @@
 
 /* Mobile vs Desktop CSS Scroll Snap Container Isolation */
 @media (max-width: 767px) {
+  html, body, #root, #presentation-viewport {
+    overflow-y: auto !important;
+    height: auto !important;
+  }
   .slides-container {
     scroll-snap-type: none !important;
-    overflow-y: auto !important;
+    overflow-y: visible !important;
+    height: auto !important;
   }
-
+  /* Slide 1 stays full screen, remaining slides have natural height with clean spacing */
   .slide-section {
     scroll-snap-align: none !important;
     height: auto !important;
-    min-height: 100svh !important;
-    padding-top: 4.5rem !important;
-    padding-bottom: 3.5rem !important;
+    overflow: visible !important;
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+  }
+  #slide-1-cover {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
   }
 }
-
 @media (min-width: 768px) {
   .slides-container {
     scroll-snap-type: y mandatory;
-    scroll-behavior: smooth;
-    overscroll-behavior-y: contain;
+    height: 100vh;
+    overflow-y: scroll;
   }
-
   .slide-section {
     scroll-snap-align: start;
-    scroll-snap-stop: normal;
     height: 100vh;
     overflow: hidden;
-    contain: content;
-    will-change: transform;
   }
 }
 

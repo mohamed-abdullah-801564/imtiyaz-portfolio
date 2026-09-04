@@ -45,7 +45,7 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
     >
       {/* Top Header Metadata Bar */}
       <div className="w-full max-w-6xl mx-auto flex items-center justify-between select-none z-20 pt-2">
-        <div className="flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-3">
           <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
             08 // CONTACT & INQUIRIES
           </span>

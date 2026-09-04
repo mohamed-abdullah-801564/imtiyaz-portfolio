@@ -63,10 +63,10 @@ export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
                 key={project.id}
                 id={`project-item-${idx}`}
                 onClick={() => onSelectProject(project)}
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.05 }}
-                transition={{ duration: 0.5, delay: (isMobile ? 1 : 0.5) + 0.08 * idx }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.7, delay: 0.6 + (idx * 0.15), ease: [0.16, 1, 0.3, 1] }}
                 className="group relative rounded-2xl border border-white/[0.08] hover:border-white/20 bg-zinc-950/70 hover:bg-zinc-900/80 overflow-hidden backdrop-blur-md shadow-2xl hover:-translate-y-1.5 transition-all duration-300 aspect-[4/3] sm:aspect-square md:h-44 cursor-pointer p-2.5 sm:p-3 flex flex-col justify-between"
               >
                 {isWhiteBgLogo ? (
@@ -109,7 +109,7 @@ export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
       </motion.div>
 
       {/* Bottom Minimal Metadata */}
-      <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-12 z-20 select-none text-[10px] sm:text-[11px] font-mono text-zinc-600">
+      <div className="hidden md:block absolute bottom-6 right-6 sm:bottom-8 sm:right-12 z-20 select-none text-[10px] sm:text-[11px] font-mono text-zinc-600">
         05 // PROJECTS
       </div>
     </section>

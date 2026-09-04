@@ -24,7 +24,7 @@ export const Slide4Services: React.FC<Slide4ServicesProps> = () => {
       className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start px-5 sm:px-10 lg:px-16 py-14 md:py-0 bg-[#030305]"
     >
       {/* Corner Minimal Metadata */}
-      <div className="absolute top-6 left-6 sm:top-8 sm:left-12 flex items-center gap-3 select-none z-20">
+      <div className="hidden md:flex absolute top-6 left-6 sm:top-8 sm:left-12 items-center gap-3 select-none z-20">
         <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
           04 // SERVICES & CAPABILITIES
         </span>
@@ -53,10 +53,10 @@ export const Slide4Services: React.FC<Slide4ServicesProps> = () => {
           {PROFILE_DATA.services.map((service, idx) => (
             <motion.div
               key={service.number}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.05 }}
-              transition={{ duration: 0.5, delay: (isMobile ? 1 : 0.5) + 0.08 * idx }}
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{ duration: 0.7, delay: 0.6 + (idx * 0.15), ease: [0.16, 1, 0.3, 1] }}
             >
               <TiltCard
                 max={8}
@@ -101,7 +101,7 @@ export const Slide4Services: React.FC<Slide4ServicesProps> = () => {
       </motion.div>
 
       {/* Bottom Minimal Metadata */}
-      <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-12 z-20 select-none text-[10px] sm:text-[11px] font-mono text-zinc-600">
+      <div className="hidden md:block absolute bottom-6 right-6 sm:bottom-8 sm:right-12 z-20 select-none text-[10px] sm:text-[11px] font-mono text-zinc-600">
         04 // SERVICES
       </div>
     </section>
