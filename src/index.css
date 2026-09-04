@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-syne: 'Syne', sans-serif;
+    --font-inter: 'Inter', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-inter);
+    background-color: #030305;
+    color: #ffffff;
+  }
+}
+
+.font-syne {
+  font-family: 'Syne', sans-serif;
+}
+
+.font-syncopate {
+  font-family: 'Syncopate', sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.font-unbounded {
+  font-family: 'Unbounded', sans-serif;
+}
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-jakarta {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Hide default scrollbars for pure slide-deck presentation look */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* CSS Scroll Snap Container */
+.slides-container {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-y: contain;
+}
+
+.slide-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+  contain: content;
+  will-change: transform;
+}
+
+/* Subtle glow orb pulse keyframes */
+@keyframes orb-pulse {
+  0%,
+  100% {
+    transform: scale(1) translate(0px, 0px);
+    opacity: 0.85;
+  }
+
+  50% {
+    transform: scale(1.08) translate(15px, -10px);
+    opacity: 1;
+  }
+}
+
+@keyframes orb-float-alt {
+  0%,
+  100% {
+    transform: scale(1.05) translate(-10px, 10px) rotate(0deg);
+    opacity: 0.75;
+  }
+
+  50% {
+    transform: scale(0.95) translate(20px, -15px) rotate(15deg);
+    opacity: 0.95;
+  }
+}
+
+.animate-orb {
+  animation: orb-pulse 8s ease-in-out infinite;
+}
+
+.animate-orb-alt {
+  animation: orb-float-alt 11s ease-in-out infinite;
+}
+
+/* Vignette edge mask */
+.vignette-overlay {
+  background: radial-gradient(circle at center, transparent 40%, rgba(3, 3, 5, 0.7) 85%, #030305 100%);
+  pointer-events: none;
+}
