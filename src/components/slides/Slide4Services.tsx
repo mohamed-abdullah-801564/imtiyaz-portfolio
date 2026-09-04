@@ -8,8 +8,8 @@ interface Slide4ServicesProps {
   activeSlide?: number;
 }
 
-export const Slide4Services: React.FC<Slide4ServicesProps> = ({ activeSlide = 3 }) => {
-  const isActive = activeSlide === 3;
+export const Slide4Services: React.FC<Slide4ServicesProps> = () => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   const serviceIcons = [
     <Target className="w-5 h-5 text-blue-400" />,
@@ -21,10 +21,10 @@ export const Slide4Services: React.FC<Slide4ServicesProps> = ({ activeSlide = 3 
   return (
     <section
       id="slide-4-services"
-      className="slide-section w-screen h-screen relative flex items-center justify-center overflow-hidden snap-start px-6 sm:px-12 lg:px-16 bg-[#030305]"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start px-5 sm:px-10 lg:px-16 py-14 md:py-0 bg-[#030305]"
     >
       {/* Corner Minimal Metadata */}
-      <div className="absolute top-8 left-8 sm:left-12 flex items-center gap-3 select-none z-20">
+      <div className="absolute top-6 left-6 sm:top-8 sm:left-12 flex items-center gap-3 select-none z-20">
         <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
           04 // SERVICES & CAPABILITIES
         </span>
@@ -32,17 +32,18 @@ export const Slide4Services: React.FC<Slide4ServicesProps> = ({ activeSlide = 3 
 
       {/* Main Layout Container */}
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-        transition={{ duration: 0.7, delay: 0.2 }}
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 0.6, delay: isMobile ? 1 : 0.5 }}
         className="w-full max-w-5xl mx-auto flex flex-col justify-center z-10 my-auto py-4 select-none"
       >
         {/* Section Header */}
         <div className="text-center mb-6 sm:mb-8">
-          <h2 className="font-syne font-black text-2xl sm:text-4xl lg:text-5xl text-white tracking-tight uppercase leading-none">
+          <h2 className="font-syne font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-tight uppercase leading-none">
             WHAT I DO
           </h2>
-          <p className="text-xs sm:text-sm font-jakarta text-zinc-400 max-w-xl mx-auto mt-2 leading-relaxed">
+          <p className="font-sans text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto mt-2 leading-relaxed">
             Core digital marketing & design pillars engineered to accelerate brand visibility and drive revenue.
           </p>
         </div>
@@ -52,30 +53,31 @@ export const Slide4Services: React.FC<Slide4ServicesProps> = ({ activeSlide = 3 
           {PROFILE_DATA.services.map((service, idx) => (
             <motion.div
               key={service.number}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.5, delay: 0.15 * idx }}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.05 }}
+              transition={{ duration: 0.5, delay: (isMobile ? 1 : 0.5) + 0.08 * idx }}
             >
               <TiltCard
                 max={8}
                 glare={true}
-                className="p-5 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 hover:border-white/25 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
+                className="p-5 rounded-2xl bg-zinc-950/70 backdrop-blur-md border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-md">
                       {serviceIcons[idx]}
                     </div>
-                    <span className="text-xs font-mono font-bold text-zinc-500 group-hover:text-blue-400 transition-colors">
+                    <span className="font-mono text-[10px] sm:text-[11px] tracking-[0.2em] text-zinc-400 uppercase font-semibold group-hover:text-blue-400 transition-colors">
                       {service.number}
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-syne font-bold text-white mb-2 leading-snug group-hover:text-blue-300 transition-colors">
+                  <h3 className="font-sans font-bold text-sm sm:text-base text-white tracking-tight leading-snug mb-2 group-hover:text-blue-300 transition-colors">
                     {service.title}
                   </h3>
 
-                  <p className="text-xs text-zinc-300 font-jakarta leading-relaxed mb-4">
+                  <p className="font-sans text-xs text-zinc-400 leading-relaxed font-normal mb-4">
                     {service.description}
                   </p>
                 </div>
@@ -99,7 +101,7 @@ export const Slide4Services: React.FC<Slide4ServicesProps> = ({ activeSlide = 3 
       </motion.div>
 
       {/* Bottom Minimal Metadata */}
-      <div className="absolute bottom-6 right-8 sm:right-12 z-20 select-none text-[10px] sm:text-[11px] font-mono text-zinc-600">
+      <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-12 z-20 select-none text-[10px] sm:text-[11px] font-mono text-zinc-600">
         04 // SERVICES
       </div>
     </section>

@@ -141,7 +141,7 @@ export default function App() {
       <div
         ref={containerRef}
         id="fullscreen-slides-viewport"
-        className="slides-container w-screen h-screen overflow-y-scroll overflow-x-hidden no-scrollbar relative z-10"
+        className="slides-container min-h-[100dvh] h-full w-screen overflow-y-scroll overflow-x-hidden no-scrollbar relative z-10"
       >
         {/* SLIDE 1: INTRO COVER */}
         <Slide1Intro onExplore={handleNextSlide} activeSlide={activeSlide} />

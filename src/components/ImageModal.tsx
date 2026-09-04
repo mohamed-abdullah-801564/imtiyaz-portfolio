@@ -29,7 +29,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="relative max-w-4xl w-full bg-zinc-950/80 border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row items-stretch"
+        className="relative max-w-4xl w-[92vw] md:w-full max-h-[85vh] md:max-h-none bg-zinc-950/90 border border-white/10 rounded-2xl overflow-y-auto md:overflow-visible shadow-2xl flex flex-col md:flex-row items-stretch"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -37,17 +37,17 @@ export const ImageModal: React.FC<ImageModalProps> = ({
           id="btn-close-modal"
           onClick={onClose}
           aria-label="Close modal"
-          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 border border-white/15 text-zinc-400 hover:text-white hover:bg-black/90 flex items-center justify-center transition-all cursor-pointer"
+          className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/70 border border-white/20 text-zinc-300 hover:text-white hover:bg-black flex items-center justify-center transition-all cursor-pointer shadow-lg"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Media Frame */}
-        <div className="md:w-3/5 bg-black/60 flex items-center justify-center p-4 border-b md:border-b-0 md:border-r border-white/10">
+        <div className="w-full md:w-3/5 bg-black/70 flex items-center justify-center p-3 sm:p-4 border-b md:border-b-0 md:border-r border-white/10 shrink-0">
           <img
             src={image}
             alt={title}
-            className="max-h-[70vh] w-auto object-contain rounded-lg shadow-xl"
+            className="max-h-[40vh] sm:max-h-[50vh] md:max-h-[70vh] w-auto object-contain rounded-lg shadow-xl"
           />
         </div>
 

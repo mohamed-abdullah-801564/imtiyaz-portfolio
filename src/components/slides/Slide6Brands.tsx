@@ -8,16 +8,16 @@ interface Slide6BrandsProps {
   activeSlide?: number;
 }
 
-export const Slide6Brands: React.FC<Slide6BrandsProps> = ({ activeSlide = 5 }) => {
-  const isActive = activeSlide === 5;
+export const Slide6Brands: React.FC<Slide6BrandsProps> = () => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
     <section
       id="slide-6-brands"
-      className="slide-section w-screen h-screen relative flex flex-col items-center justify-center overflow-hidden snap-start px-6 sm:px-12 lg:px-16 bg-[#030305]"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start px-5 sm:px-10 lg:px-16 py-14 md:py-0 bg-[#030305]"
     >
       {/* Corner Minimal Metadata */}
-      <div className="absolute top-8 left-8 sm:left-12 flex items-center gap-3 select-none z-20">
+      <div className="absolute top-6 left-6 sm:top-8 sm:left-12 flex items-center gap-3 select-none z-20">
         <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
           06 // CLIENTS & COLLABORATIONS
         </span>
@@ -26,13 +26,14 @@ export const Slide6Brands: React.FC<Slide6BrandsProps> = ({ activeSlide = 5 }) =
       {/* Main Container */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
-        animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-        transition={{ duration: 0.7, delay: 0.2 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 0.7, delay: isMobile ? 1 : 0.5 }}
         className="w-full max-w-4xl mx-auto flex flex-col justify-center z-10 my-auto py-4 select-none"
       >
         {/* Section Header */}
         <div className="text-center mb-4 sm:mb-5">
-          <h2 className="font-syne font-black text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight uppercase leading-none">
+          <h2 className="font-syne font-black text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-white tracking-tight uppercase leading-none">
             CLIENT BRANDS & COLLABORATIONS
           </h2>
           <p className="text-xs font-jakarta text-zinc-400 max-w-xl mx-auto mt-1.5 leading-snug">
@@ -46,8 +47,9 @@ export const Slide6Brands: React.FC<Slide6BrandsProps> = ({ activeSlide = 5 }) =
             <motion.div
               key={brand.id}
               initial={{ opacity: 0, y: 20 }}
-              animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.5, delay: 0.15 * idx }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.05 }}
+              transition={{ duration: 0.5, delay: (isMobile ? 1 : 0.5) + 0.1 * idx }}
             >
               <TiltCard
                 max={8}

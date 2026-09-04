@@ -44,18 +44,37 @@
   scrollbar-width: none;
 }
 
-/* CSS Scroll Snap Container */
-.slides-container {
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-  overscroll-behavior-y: contain;
+/* Mobile vs Desktop CSS Scroll Snap Container Isolation */
+@media (max-width: 767px) {
+  .slides-container {
+    scroll-snap-type: none !important;
+    overflow-y: auto !important;
+  }
+
+  .slide-section {
+    scroll-snap-align: none !important;
+    height: auto !important;
+    min-height: 100svh !important;
+    padding-top: 4.5rem !important;
+    padding-bottom: 3.5rem !important;
+  }
 }
 
-.slide-section {
-  scroll-snap-align: start;
-  scroll-snap-stop: normal;
-  contain: content;
-  will-change: transform;
+@media (min-width: 768px) {
+  .slides-container {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    overscroll-behavior-y: contain;
+  }
+
+  .slide-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+    height: 100vh;
+    overflow: hidden;
+    contain: content;
+    will-change: transform;
+  }
 }
 
 /* Subtle glow orb pulse keyframes */
