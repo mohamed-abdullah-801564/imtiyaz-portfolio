@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PROFILE_DATA } from '../../data/portfolioData';
 import AnimatedDock, { DockItemData } from '../ui/animated-dock';
+import { LocationMap } from '../ui/expand-map';
 import { Mail, MessageCircle, Check, ArrowUp, Send, Download, Linkedin } from 'lucide-react';
+
 
 interface Slide8ContactProps {
   onRestart: () => void;
@@ -80,12 +82,7 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
       className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-between overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-8 md:px-10 lg:px-16 bg-[#030305]"
     >
       {/* Top Header Metadata Bar */}
-      <div className="w-full max-w-6xl mx-auto flex items-center justify-between select-none z-20 pt-2">
-        <div className="hidden md:flex items-center gap-3">
-          <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
-            08 // CONTACT & INQUIRIES
-          </span>
-        </div>
+      <div className="w-full max-w-6xl mx-auto flex items-center justify-end select-none z-20 pt-2">
 
         <button
           onClick={onRestart}
@@ -123,14 +120,14 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
           {/* Headline "LET'S CREATE." */}
           <h2
             id="contact-headline"
-            className="relative z-10 font-syne font-extrabold text-2xl sm:text-3xl md:text-7xl lg:text-8xl tracking-tight text-white uppercase leading-tight md:leading-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.9)]"
+            className="relative z-10 font-syne font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight text-white uppercase leading-tight md:leading-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.9)]"
             style={{ letterSpacing: '-0.03em' }}
           >
             LET'S CREATE.
           </h2>
 
           {/* Subtitle "MARKET. GROW." in high-contrast blue tracking */}
-          <h3 className="relative z-10 font-mono font-bold text-xl sm:text-3xl text-blue-400 tracking-[0.25em] uppercase mt-2">
+          <h3 className="relative z-10 font-mono font-bold text-xl sm:text-2xl text-blue-400 tracking-[0.25em] uppercase mt-2">
             MARKET. GROW.
           </h3>
 
@@ -154,9 +151,10 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
           )}
         </AnimatePresence>
 
-        {/* INTERACTIVE ANIMATED DOCK */}
-        <div className="w-full flex justify-center mt-2 mb-2">
+        {/* INTERACTIVE ACTIONS ROW (ANIMATED DOCK & LOCATION MAP SIDE-BY-SIDE) */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-6 w-full mt-2 mb-2 z-20">
           <AnimatedDock items={dockItems} />
+          <LocationMap location="Muscat, Oman" coordinates="23.5880° N, 58.3829° E" />
         </div>
       </motion.div>
 

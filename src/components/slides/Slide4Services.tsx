@@ -23,13 +23,6 @@ export const Slide4Services: React.FC<Slide4ServicesProps> = () => {
       id="slide-4-services"
       className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-0 md:px-10 lg:px-16 bg-[#030305]"
     >
-      {/* Corner Minimal Metadata */}
-      <div className="hidden md:flex absolute top-6 left-6 sm:top-8 sm:left-12 items-center gap-3 select-none z-20">
-        <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
-          04 // SERVICES & CAPABILITIES
-        </span>
-      </div>
-
       {/* Main Layout Container */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
@@ -99,11 +92,6 @@ export const Slide4Services: React.FC<Slide4ServicesProps> = () => {
           ))}
         </div>
       </motion.div>
-
-      {/* Bottom Minimal Metadata */}
-      <div className="hidden md:block absolute bottom-6 right-6 sm:bottom-8 sm:right-12 z-20 select-none text-[10px] sm:text-[11px] font-mono text-zinc-600">
-        04 // SERVICES
-      </div>
     </section>
   );
 };

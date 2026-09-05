@@ -150,7 +150,7 @@ export default function App() {
         <Slide2About activeSlide={activeSlide} />
 
         {/* SLIDE 3: CREDENTIALS & EXPERIENCE */}
-        <Slide3Experience activeSlide={activeSlide} />
+        <Slide3Experience activeSlide={activeSlide} isActive={activeSlide === 2} />
 
         {/* SLIDE 4: SERVICES & CAPABILITIES */}
         <Slide4Services activeSlide={activeSlide} />

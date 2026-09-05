@@ -107,11 +107,7 @@ export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
           })}
         </div>
       </motion.div>
-
-      {/* Bottom Minimal Metadata */}
-      <div className="hidden md:block absolute bottom-6 right-6 sm:bottom-8 sm:right-12 z-20 select-none text-[10px] sm:text-[11px] font-mono text-zinc-600">
-        05 // PROJECTS
-      </div>
     </section>
   );
 };
+
