@@ -86,7 +86,7 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
 
         <button
           onClick={onRestart}
-          className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono tracking-[0.2em] text-zinc-400 hover:text-white transition-colors uppercase cursor-pointer py-1 px-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10"
+          className="flex items-center gap-1.5 text-label font-jakarta font-medium text-zinc-400 hover:text-white transition-colors uppercase cursor-pointer py-1 px-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10"
         >
           <ArrowUp className="w-3.5 h-3.5" />
           <span>Back to Top</span>
@@ -113,7 +113,7 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
             }}
           />
 
-          <span className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-sm text-zinc-400 block mb-2 z-10">
+          <span className="font-mono text-label tracking-[0.25em] uppercase font-semibold text-blue-400 block mb-2 z-10">
             Available For New Opportunities
           </span>
 
@@ -127,11 +127,11 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
           </h2>
 
           {/* Subtitle "MARKET. GROW." in high-contrast blue tracking */}
-          <h3 className="relative z-10 font-mono font-bold text-xl sm:text-2xl text-blue-400 tracking-[0.25em] uppercase mt-2">
+          <h3 className="relative z-10 font-syne font-extrabold text-xl sm:text-2xl text-blue-400 tracking-[0.2em] uppercase mt-2">
             MARKET. GROW.
           </h3>
 
-          <p className="relative z-10 font-jakarta font-normal text-xs sm:text-sm tracking-wider text-zinc-300 max-w-lg mt-3 font-medium">
+          <p className="relative z-10 font-jakarta text-body-sm text-zinc-300 max-w-lg mt-3">
             Transforming Creative Ideas into Digital Success
           </p>
         </div>
@@ -143,7 +143,7 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              className="mb-4 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono text-xs flex items-center gap-2 shadow-lg backdrop-blur-md"
+              className="mb-4 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-jakarta text-body-sm flex items-center gap-2 shadow-lg backdrop-blur-md"
             >
               <Check className="w-3.5 h-3.5 text-emerald-400" />
               <span>{copiedText === 'Email' ? 'Email copied to clipboard!' : copiedText}</span>
@@ -159,7 +159,7 @@ export const Slide8Contact: React.FC<Slide8ContactProps> = ({
       </motion.div>
 
       {/* GROUNDED PINNED FOOTER BAR */}
-      <footer className="w-full max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 pt-4 border-t border-white/10 text-[10px] sm:text-[11px] font-mono tracking-[0.2em] text-zinc-500 uppercase z-20 select-none pb-2">
+      <footer className="w-full max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 pt-4 border-t border-white/10 text-label font-jakarta text-zinc-400 uppercase z-20 select-none pb-2">
         <span>© 2026 Mohamed Imtiaz • Muscat, Sultanate of Oman</span>
         <button
           onClick={onRestart}

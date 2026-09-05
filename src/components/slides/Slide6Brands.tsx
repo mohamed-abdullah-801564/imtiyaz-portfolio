@@ -29,7 +29,7 @@ export const Slide6Brands: React.FC<Slide6BrandsProps> = () => {
           <h2 className="font-syne font-extrabold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-white tracking-tight uppercase leading-tight md:leading-none">
             CLIENT BRANDS & COLLABORATIONS
           </h2>
-          <p className="font-jakarta font-normal text-xs text-zinc-400 max-w-xl mx-auto mt-1.5 leading-snug">
+          <p className="font-jakarta font-normal text-body-sm text-zinc-400 max-w-xl mx-auto mt-1.5 leading-snug">
             Long-term marketing retainer accounts, creative direction & digital ad campaigns across Oman & GCC.
           </p>
         </div>
@@ -47,39 +47,39 @@ export const Slide6Brands: React.FC<Slide6BrandsProps> = () => {
               <TiltCard
                 max={8}
                 glare={true}
-                className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/25 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
+                className="p-4 sm:p-5 rounded-2xl bg-white/[0.045] border border-white/[0.12] hover:border-white/20 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
               >
                 <div>
                   {/* Top Row: Avatar & Location Badge */}
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <div className="flex items-center gap-2.5">
-                      <span className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-900/80 to-zinc-900 border border-blue-500/40 flex items-center justify-center text-xs font-syne font-black text-blue-300 group-hover:text-white shrink-0 shadow-md transition-colors">
+                      <span className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-900/80 to-zinc-900 border border-blue-500/40 flex items-center justify-center text-label font-syne font-black text-blue-300 group-hover:text-white shrink-0 shadow-md transition-colors">
                         {brand.initials}
                       </span>
                       <div>
-                        <h3 className="font-jakarta font-bold text-sm text-white group-hover:text-blue-300 transition-colors leading-snug">
+                        <h3 className="font-jakarta font-bold text-body text-white group-hover:text-blue-300 transition-colors leading-snug">
                           {brand.name}
                         </h3>
                         {brand.handle && (
-                          <span className="font-mono text-[10px] tracking-[0.25em] text-zinc-400 block leading-tight">
+                          <span className="font-jakarta text-label text-zinc-400 block leading-tight">
                             {brand.handle}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-zinc-400 text-[9px] font-mono flex items-center gap-1 shrink-0">
+                    <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-zinc-300 text-label font-jakarta flex items-center gap-1 shrink-0">
                       <MapPin className="w-2.5 h-2.5 text-blue-400" />
                       {brand.location}
                     </span>
                   </div>
 
                   {/* Subtitle & Industry */}
-                  <p className="font-jakarta font-normal text-[11px] sm:text-xs text-zinc-300 leading-snug mt-1.5 mb-1.5">
+                  <p className="font-jakarta font-normal text-body-sm text-zinc-300 leading-snug mt-1.5 mb-1.5">
                     {brand.subtitle}
                   </p>
 
-                  <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-400 mb-2">
+                  <div className="flex items-center gap-1 text-label font-jakarta text-zinc-400 mb-2">
                     <Building2 className="w-3 h-3 text-zinc-500" />
                     <span>{brand.industry}</span>
                   </div>
@@ -90,7 +90,7 @@ export const Slide6Brands: React.FC<Slide6BrandsProps> = () => {
                   {brand.services.map((service, sIdx) => (
                     <span
                       key={sIdx}
-                      className="px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-300 text-[9px] font-mono flex items-center gap-1"
+                      className="px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-300 text-label font-jakarta flex items-center gap-1"
                     >
                       <Tag className="w-2 h-2 text-blue-400" />
                       {service}

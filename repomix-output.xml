@@ -40,6 +40,11 @@ The content is organized as follows:
 </file_summary>
 
 <directory_structure>
+components/
+  ui/
+    animated-dock.tsx
+    expand-map.tsx
+    gradient-bold-card.tsx
 public/
   image/
     6.png
@@ -64,12 +69,17 @@ src/
     slides/
       Slide1Intro.tsx
       Slide2About.tsx
-      Slide3Toc.tsx
-      Slide4Category.tsx
+      Slide3Experience.tsx
+      Slide4Services.tsx
       Slide5Projects.tsx
-      Slide6WrapUp.tsx
+      Slide6Brands.tsx
+      Slide7WhyMe.tsx
+      Slide8Contact.tsx
     ui/
+      animated-dock.tsx
       be-ui-tilt-card.tsx
+      expand-map.tsx
+      gradient-bold-card.tsx
     AuraBackground.tsx
     ImageModal.tsx
     SlideNav.tsx
@@ -92,741 +102,161 @@ vite.config.ts
 <files>
 This section contains the contents of the repository's files.
 
-<file path="src/components/slides/Slide1Intro.tsx">
-import React from 'react';
+<file path="components/ui/animated-dock.tsx">
+export { default } from "../../src/components/ui/animated-dock";
+export * from "../../src/components/ui/animated-dock";
+</file>
 
-interface Slide1IntroProps {
-  onExplore: () => void;
+<file path="components/ui/expand-map.tsx">
+export { LocationMap, default } from "../../src/components/ui/expand-map";
+</file>
+
+<file path="components/ui/gradient-bold-card.tsx">
+export { default } from "../../src/components/ui/gradient-bold-card";
+export * from "../../src/components/ui/gradient-bold-card";
+</file>
+
+<file path="src/components/ui/animated-dock.tsx">
+"use client";
+
+import React, { useRef, useState } from "react";
+import {
+  MotionValue,
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  AnimatePresence,
+} from "motion/react";
+import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
+
+const cn = (...args: any[]) => twMerge(clsx(args));
+
+export interface DockItemData {
+  link?: string;
+  onClick?: () => void;
+  Icon: React.ReactNode;
+  label?: string;
+  target?: string;
+  itemClassName?: string;
 }
 
-export const Slide1Intro: React.FC<Slide1IntroProps> = ({ onExplore }) => {
+export interface AnimatedDockProps {
+  className?: string;
+  items: DockItemData[];
+}
+
+export const AnimatedDock: React.FC<AnimatedDockProps> = ({ className, items }) => {
+  const mouseX = useMotionValue(Infinity);
+
   return (
-    <section
-      id="slide-1-cover"
-      className="slide-section w-screen h-screen relative flex flex-col items-center justify-center overflow-hidden snap-start px-6 bg-transparent"
+    <motion.div
+      onMouseMove={(e) => mouseX.set(e.pageX)}
+      onMouseLeave={() => mouseX.set(Infinity)}
+      className={cn(
+        "mx-auto flex h-20 items-center justify-center gap-3 sm:gap-4 rounded-3xl bg-white/[0.04] dark:bg-black/60 backdrop-blur-2xl border border-white/15 shadow-[0_15px_35px_rgba(0,0,0,0.5)] px-4 sm:px-6 py-3 select-none",
+        className
+      )}
     >
-      {/* 
-        MAIN CENTER TITLE: PORTFOLIO• (Reference: Image 1)
-        High-impact crisp white geometric sans-serif positioned directly over the glowing curved ribbon
-      */}
-      <div className="relative z-10 text-center select-none flex items-center justify-center">
-        <h1
-          id="hero-title"
-          className="font-sans font-black text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white leading-none flex items-center justify-center"
-          style={{ letterSpacing: '-0.03em' }}
-        >
-          PORTFOLIO
-          <span
-            className="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-white ml-2 sm:ml-3 md:ml-4 -mt-6 sm:-mt-8 md:-mt-10 lg:-mt-12"
-            aria-hidden="true"
-          />
-        </h1>
-      </div>
+      {items.map((item, index) => (
+        <DockItem key={index} mouseX={mouseX} item={item} />
+      ))}
+    </motion.div>
+  );
+};
 
-      {/* Bottom Left Corner Details */}
-      <div className="absolute bottom-8 left-8 sm:left-12 z-20 select-none text-left">
-        <p className="text-xs sm:text-sm font-sans font-semibold text-white/90">
-          Mohamed Imtiaz
-        </p>
-        <p className="text-[10px] sm:text-[11px] font-mono text-zinc-400 mt-0.5">
-          Digital Marketer & Designer • Muscat, Oman
-        </p>
-      </div>
+interface DockItemProps {
+  mouseX: MotionValue<number>;
+  item: DockItemData;
+}
 
-      {/* Bottom Right Minimal Scroll Indicator (Reference: Image 1) */}
-      <button
-        onClick={onExplore}
-        id="btn-scroll-indicator"
-        className="absolute bottom-8 right-8 sm:right-12 z-20 flex items-center gap-2 group cursor-pointer text-zinc-500 hover:text-white transition-colors select-none"
-        aria-label="Scroll to next slide"
+export const DockItem: React.FC<DockItemProps> = ({ mouseX, item }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const distance = useTransform(mouseX, (val: number) => {
+    const rect = ref.current ? ref.current.getBoundingClientRect() : { x: 0, width: 0 };
+    return val - rect.x - rect.width / 2;
+  });
+
+  const widthSync = useTransform(distance, [-150, 0, 150], [44, 76, 44]);
+  const width = useSpring(widthSync, {
+    mass: 0.1,
+    stiffness: 160,
+    damping: 14,
+  });
+
+  const iconScale = useTransform(width, [44, 76], [1, 1.45]);
+  const iconSpring = useSpring(iconScale, {
+    mass: 0.1,
+    stiffness: 160,
+    damping: 14,
+  });
+
+  const content = (
+    <motion.div
+      style={{ scale: iconSpring }}
+      className="flex items-center justify-center w-full h-full text-white"
+    >
+      {item.Icon}
+    </motion.div>
+  );
+
+  return (
+    <div className="relative flex flex-col items-center">
+      {/* Hover Tooltip Label */}
+      <AnimatePresence>
+        {isHovered && item.label && (
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.9 }}
+            animate={{ opacity: 1, y: -48, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.9 }}
+            transition={{ duration: 0.15 }}
+            className="absolute pointer-events-none z-30 whitespace-nowrap px-3 py-1 rounded-lg bg-zinc-900/90 text-white font-mono text-[11px] font-semibold border border-white/20 shadow-xl backdrop-blur-md"
+          >
+            {item.label}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Dock Item Capsule */}
+      <motion.div
+        ref={ref}
+        style={{ width, height: width }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={cn(
+          "aspect-square rounded-2xl flex items-center justify-center cursor-pointer transition-colors duration-200 border border-white/10 shadow-lg relative group",
+          item.itemClassName || "bg-white/10 hover:bg-white/20 text-white"
+        )}
       >
-        <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase text-zinc-600 group-hover:text-zinc-400 transition-colors">
-          Scroll
-        </span>
-        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 group-hover:bg-cyan-400 group-hover:scale-125 transition-all" />
-      </button>
-    </section>
-  );
-};
-</file>
-
-<file path="src/components/slides/Slide2About.tsx">
-import React, { useState } from 'react';
-import { PROFILE_DATA } from '../../data/portfolioData';
-import { TiltCard } from '../ui/be-ui-tilt-card';
-import { Mail, MessageCircle, Check, GraduationCap, Briefcase, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
-
-export const Slide2About: React.FC = () => {
-  const [copiedNotification, setCopiedNotification] = useState<string | null>(null);
-
-  const handleCopy = (text: string, label: string) => {
-    navigator.clipboard?.writeText(text);
-    setCopiedNotification(`${label} copied!`);
-    setTimeout(() => setCopiedNotification(null), 2500);
-  };
-
-  return (
-    <section
-      id="slide-2-about"
-      className="slide-section w-screen h-screen relative flex items-center justify-center overflow-hidden snap-start px-6 sm:px-12 lg:px-16 bg-[#030305]"
-    >
-      {/* Corner Minimal Metadata */}
-      <div className="absolute top-8 left-8 sm:left-12 flex items-center gap-3 select-none z-20">
-        <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
-          02 // ABOUT & STRATEGY
-        </span>
-      </div>
-
-      {/* Main Layout Split Grid */}
-      <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-14 z-10 my-auto pt-4 pb-2">
-
-        {/* ================= LEFT COLUMN: SILHOUETTE HEADSHOT OVER BLUE SPOTLIGHT ================= */}
-        <div className="flex flex-col items-center lg:items-start shrink-0 select-none">
-          <div className="mb-4 text-center lg:text-left">
-            <span className="text-xs font-mono tracking-widest text-blue-400 uppercase font-semibold block mb-1">
-              Hello, I am
-            </span>
-            <h2 className="font-syne font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-none">
-              {PROFILE_DATA.name}
-            </h2>
-            <p className="text-xs font-jakarta text-zinc-400 mt-1.5 font-medium max-w-xs">
-              {PROFILE_DATA.role}
-            </p>
-          </div>
-
-          {/* Cutout Portrait Silhouette floating over blue studio spotlight (No box, no checkerboard) */}
-          <div className="relative w-60 h-80 sm:w-68 sm:h-[360px] flex items-end justify-center">
-            {/* Luminous Blue Radial Spotlight Orb directly behind silhouette head & shoulders */}
-            <div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 sm:w-80 sm:h-80 rounded-full opacity-90 pointer-events-none"
-              style={{
-                background:
-                  'radial-gradient(circle at center, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.75) 45%, rgba(15, 23, 42, 0.15) 75%, transparent 88%)',
-                filter: 'blur(45px)',
-              }}
-            />
-
-            {/* Seamless Cutout Portrait Image dissolving smoothly into pitch black (#030305) */}
-            <img
-              src={PROFILE_DATA.headshot}
-              alt="Mohamed Imtiaz Portrait"
-              id="profile-img"
-              className="relative z-10 w-full h-full object-cover object-top"
-              style={{
-                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 100%)',
-                WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 100%)',
-              }}
-            />
-          </div>
-        </div>
-
-        {/* ================= RIGHT COLUMN: ABOUT, 3D TILT GLASS CARDS & TOOLS ================= */}
-        <div className="flex-1 max-w-2xl text-left select-none">
-          {/* Bio Headline & Copy */}
-          <div className="mb-5">
-            <h3 className="text-xl sm:text-2xl font-syne font-extrabold text-white tracking-tight mb-2 flex items-center gap-2">
-              <span>About Me</span>
-              <span className="w-2 h-2 rounded-full bg-blue-500" />
-            </h3>
-            <p className="text-xs sm:text-[13px] text-zinc-300 leading-relaxed font-jakarta font-normal">
-              {PROFILE_DATA.about}
-            </p>
-          </div>
-
-          {/* DUAL 3D TILT GLASS CARDS (Card A & Card B) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-
-            {/* CARD A: Education & Credentials */}
-            <TiltCard
-              max={12}
-              glare={true}
-              className="p-5 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 hover:border-blue-500/50 shadow-2xl transition-all duration-300 h-full flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-xs font-mono font-bold text-blue-400 tracking-wider uppercase flex items-center gap-1.5">
-                    <GraduationCap className="w-4 h-4" />
-                    <span>Education</span>
-                  </h4>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-emerald-400" /> Verified
-                  </span>
-                </div>
-
-                <ul className="space-y-2.5">
-                  <li className="text-xs font-jakarta">
-                    <p className="text-white font-semibold leading-snug">Bachelor of Business Administration (BBA)</p>
-                    <p className="text-zinc-400 text-[11px] mt-0.5">E.G.S. Pillay Arts & Science College</p>
-                  </li>
-                  <li className="text-xs font-jakarta pt-2 border-t border-white/5">
-                    <p className="text-white font-semibold leading-snug">Animation, Design & Video Editing</p>
-                    <p className="text-zinc-400 text-[11px] mt-0.5">FGI Media Solution (1-Yr Diploma)</p>
-                  </li>
-                  <li className="text-xs font-jakarta pt-2 border-t border-white/5 flex items-center justify-between">
-                    <div>
-                      <p className="text-white font-semibold leading-snug">Certified Digital Marketer</p>
-                      <p className="text-zinc-400 text-[11px] mt-0.5">HubSpot Academy</p>
-                    </div>
-                    <span className="px-2 py-0.5 rounded bg-orange-500/15 border border-orange-500/30 text-orange-400 text-[9px] font-mono">
-                      HubSpot
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            </TiltCard>
-
-            {/* CARD B: Experience & Roles */}
-            <TiltCard
-              max={12}
-              glare={true}
-              className="p-5 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 hover:border-blue-500/50 shadow-2xl transition-all duration-300 h-full flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-xs font-mono font-bold text-blue-400 tracking-wider uppercase flex items-center gap-1.5">
-                    <Briefcase className="w-4 h-4" />
-                    <span>Experience</span>
-                  </h4>
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase">2+ Years</span>
-                </div>
-
-                <ul className="space-y-3">
-                  <li className="text-xs font-jakarta">
-                    <div className="flex items-center justify-between">
-                      <p className="text-white font-bold">MS Max (Oman)</p>
-                      <span className="text-[9px] font-mono text-blue-400 px-2 py-0.5 rounded bg-blue-950/70 border border-blue-500/40">
-                        Current
-                      </span>
-                    </div>
-                    <p className="text-zinc-300 text-[11px] font-medium mt-0.5">Digital Marketing & Accounts</p>
-                    <p className="text-[10px] text-zinc-400 mt-1 leading-snug">
-                      Performance marketing, Meta ad campaigns, brand identity, and client accounts.
-                    </p>
-                  </li>
-                  <li className="text-xs font-jakarta pt-2.5 border-t border-white/5">
-                    <div className="flex items-center justify-between">
-                      <p className="text-white font-bold">Spark Digitech Solutions</p>
-                      <span className="text-[9px] font-mono text-zinc-400 px-2 py-0.5 rounded bg-white/5 border border-white/10">
-                        1 Year
-                      </span>
-                    </div>
-                    <p className="text-zinc-300 text-[11px] font-medium mt-0.5">Graphic Designer & Marketer</p>
-                  </li>
-                </ul>
-              </div>
-            </TiltCard>
-          </div>
-
-          {/* Sleek Software Tiles with Glowing Borders */}
-          <div className="mb-4">
-            <h4 className="text-xs font-mono font-bold text-zinc-400 tracking-wider uppercase mb-2 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              <span>Software & Marketing Stack</span>
-            </h4>
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Primary Adobe Apps */}
-              {PROFILE_DATA.tools.map((tool) => (
-                <div
-                  key={tool.name}
-                  title={tool.name}
-                  className={`w-9 h-9 rounded-xl ${tool.bg} border ${tool.borderColor} flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-default`}
-                >
-                  <span className={`text-xs font-syne font-black ${tool.textColor}`}>
-                    {tool.abbr}
-                  </span>
-                </div>
-              ))}
-              {/* Marketing Badges */}
-              {PROFILE_DATA.secondaryTools.map((tool) => (
-                <div
-                  key={tool.name}
-                  title={tool.name}
-                  className="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-xs font-jakarta text-zinc-300 flex items-center justify-center hover:bg-white/[0.1] hover:border-white/20 transition-all cursor-default shadow-md"
-                >
-                  <span className={tool.color}>{tool.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Minimal 4-Column Horizontal Pill Strip for 4-Step Strategy */}
-          <div className="pt-3 border-t border-white/10">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {PROFILE_DATA.approach.map((item) => (
-                <div
-                  key={item.step}
-                  className="px-3 py-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-blue-500/40 transition-colors select-none"
-                >
-                  <span className="text-[10px] font-mono text-blue-400 block font-extrabold tracking-wider">
-                    {item.step} {item.title}
-                  </span>
-                  <span className="text-[10px] text-zinc-400 font-jakarta leading-tight block mt-0.5 truncate">
-                    {item.description}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Bottom Minimal Metadata */}
-      <div className="absolute bottom-8 right-8 sm:right-12 z-20 select-none text-[10px] sm:text-[11px] font-mono text-zinc-600">
-        02 // ABOUT
-      </div>
-    </section>
-  );
-};
-</file>
-
-<file path="src/components/slides/Slide3Toc.tsx">
-import React from 'react';
-import { TOC_ITEMS } from '../../data/portfolioData';
-import { TiltCard } from '../ui/be-ui-tilt-card';
-
-interface Slide3TocProps {
-  onNavigateToSlide: (slideIndex: number) => void;
-}
-
-export const Slide3Toc: React.FC<Slide3TocProps> = ({ onNavigateToSlide }) => {
-  return (
-    <section
-      id="slide-3-toc"
-      className="slide-section w-screen h-screen relative flex items-center justify-center overflow-hidden snap-start px-6 sm:px-12 lg:px-20 bg-transparent"
-    >
-      {/* Corner Minimal Metadata */}
-      <div className="absolute top-8 left-8 sm:left-12 flex items-center gap-3 select-none z-20">
-        <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
-          03 // TABLE OF CONTENT
-        </span>
-      </div>
-
-      {/* Main Layout: Left Title over Glowing Blue Sphere + Right Staggered 3D Tilt Cards (Matching Image) */}
-      <div className="w-full max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 lg:gap-20 z-10 my-auto">
-
-        {/* Left Side: TABLE OF CONTENT title over glowing blue sphere */}
-        <div className="relative flex items-center justify-center select-none py-10">
-          {/* Luminous Blue Sphere Orb behind title */}
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-80 sm:h-80 rounded-full opacity-95 pointer-events-none"
-            style={{
-              background:
-                'radial-gradient(circle at center, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.8) 45%, rgba(56, 189, 248, 0.35) 75%, transparent 95%)',
-              filter: 'blur(30px)',
-            }}
-          />
-
-          <h2 className="relative z-10 font-syncopate font-bold text-3xl sm:text-4xl lg:text-5xl text-white tracking-wider leading-[1.15] uppercase text-left">
-            TABLE OF <br />
-            CONTENT
-          </h2>
-        </div>
-
-        {/* Right Side: Staggered 3D Tilt Cards (2 top, 1 bottom right matching Image) */}
-        <div className="flex flex-col gap-4 select-none">
-          {/* Top Row: Cards 01 & 02 */}
-          <div className="flex items-center gap-4">
-            {/* Card 01: SOCIAL MEDIA */}
-            <TiltCard
-              max={15}
-              glare={true}
-              onClick={() => onNavigateToSlide(TOC_ITEMS[0].targetSlide)}
-              className="w-44 sm:w-52 h-32 sm:h-36 rounded-2xl bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 hover:border-white/25 backdrop-blur-md p-5 flex flex-col justify-between shadow-2xl transition-colors duration-300"
-            >
-              <span className="text-xs font-sans font-bold text-zinc-300 tracking-wider uppercase">
-                {TOC_ITEMS[0].label}
-              </span>
-              <span className="font-sans font-black text-4xl sm:text-5xl text-white tracking-tight">
-                {TOC_ITEMS[0].number}
-              </span>
-            </TiltCard>
-
-            {/* Card 02: POSTER & BANNER */}
-            <TiltCard
-              max={15}
-              glare={true}
-              onClick={() => onNavigateToSlide(TOC_ITEMS[1].targetSlide)}
-              className="w-44 sm:w-52 h-32 sm:h-36 rounded-2xl bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 hover:border-white/25 backdrop-blur-md p-5 flex flex-col justify-between shadow-2xl transition-colors duration-300"
-            >
-              <span className="text-xs font-sans font-bold text-zinc-300 tracking-wider uppercase">
-                {TOC_ITEMS[1].label}
-              </span>
-              <span className="font-sans font-black text-4xl sm:text-5xl text-white tracking-tight">
-                {TOC_ITEMS[1].number}
-              </span>
-            </TiltCard>
-          </div>
-
-          {/* Bottom Row: Card 03: MOTION GRAPHIC (Aligned to right under Card 02) */}
-          <div className="flex items-center justify-end">
-            <TiltCard
-              max={15}
-              glare={true}
-              onClick={() => onNavigateToSlide(TOC_ITEMS[2].targetSlide)}
-              className="w-44 sm:w-52 h-32 sm:h-36 rounded-2xl bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 hover:border-white/25 backdrop-blur-md p-5 flex flex-col justify-between shadow-2xl transition-colors duration-300"
-            >
-              <span className="text-xs font-sans font-bold text-zinc-300 tracking-wider uppercase">
-                {TOC_ITEMS[2].label}
-              </span>
-              <span className="font-sans font-black text-4xl sm:text-5xl text-white tracking-tight">
-                {TOC_ITEMS[2].number}
-              </span>
-            </TiltCard>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-</file>
-
-<file path="src/components/slides/Slide4Category.tsx">
-import React from 'react';
-import { ArrowDown } from 'lucide-react';
-
-interface Slide4CategoryProps {
-  onNext: () => void;
-}
-
-export const Slide4Category: React.FC<Slide4CategoryProps> = ({ onNext }) => {
-  return (
-    <section
-      id="slide-4-category-1"
-      className="slide-section w-screen h-screen relative flex flex-col items-center justify-center overflow-hidden snap-start px-6 bg-transparent"
-    >
-      {/* Corner Minimal Metadata */}
-      <div className="absolute top-8 left-8 sm:left-12 flex items-center gap-3 select-none z-20">
-        <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
-          CATEGORY // 01
-        </span>
-      </div>
-
-      {/* Center Giant Text: SELECTED CAMPAIGNS directly over blue sphere orb */}
-      <div className="relative z-10 text-center select-none max-w-5xl mx-auto flex flex-col items-center justify-center">
-        {/* Glowing Blue Sphere Orb directly behind title */}
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 sm:w-96 sm:h-96 rounded-full opacity-90 pointer-events-none"
-          style={{
-            background:
-              'radial-gradient(circle at center, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.8) 45%, rgba(56, 189, 248, 0.35) 75%, transparent 95%)',
-            filter: 'blur(30px)',
-          }}
-        />
-
-        <h2
-          id="category-title-selected-campaigns"
-          className="relative z-10 font-syncopate font-bold text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-wider text-white uppercase leading-tight"
-        >
-          SELECTED CAMPAIGNS
-        </h2>
-        <p className="relative z-10 text-xs sm:text-sm font-mono tracking-widest text-zinc-300 uppercase mt-4 max-w-lg">
-          Social Media Creatives, Ad Campaigns & Brand Collateral
-        </p>
-      </div>
-
-      {/* Bottom Right Advance Indicator */}
-      <button
-        onClick={onNext}
-        className="absolute bottom-8 right-8 sm:right-12 z-20 flex items-center gap-2 group cursor-pointer text-zinc-400 hover:text-white transition-colors select-none"
-        aria-label="View campaign works"
-      >
-        <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase text-zinc-500 group-hover:text-zinc-300 transition-colors">
-          View Projects
-        </span>
-        <ArrowDown className="w-3.5 h-3.5 text-zinc-500 group-hover:text-blue-400 group-hover:translate-y-1 transition-all" />
-      </button>
-    </section>
-  );
-};
-</file>
-
-<file path="src/components/slides/Slide5Projects.tsx">
-import React from 'react';
-import { CAMPAIGN_PROJECTS, ProjectItem } from '../../data/portfolioData';
-import { Eye, Sparkles } from 'lucide-react';
-
-interface Slide5ProjectsProps {
-  onSelectProject: (project: ProjectItem) => void;
-}
-
-export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({ onSelectProject }) => {
-  return (
-    <section
-      id="slide-5-projects"
-      className="slide-section w-screen h-screen relative flex flex-col items-center justify-center overflow-hidden snap-start px-6 sm:px-10 lg:px-16 bg-[#030305]"
-    >
-      {/* Header */}
-      <div className="w-full max-w-6xl mx-auto mb-4 sm:mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 z-10 select-none">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-900/80 to-zinc-900 border border-blue-500/50 flex items-center justify-center text-white font-syne font-black text-base tracking-wider shadow-lg shrink-0">
-            MS
-          </div>
-          <div>
-            <h2 className="font-syncopate font-bold text-xl sm:text-2xl lg:text-3xl text-white tracking-wider uppercase">
-              MS MAX & CLIENT CAMPAIGNS
-            </h2>
-            <p className="text-xs sm:text-[13px] font-jakarta text-zinc-400 max-w-2xl leading-snug mt-0.5">
-              Creative Design, Ad Creatives & Social Content
-            </p>
-          </div>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-2 text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
-          <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-          <span>Verified Commercial Work</span>
-        </div>
-      </div>
-
-      {/* Responsive 4-Column Grid with explicit row and col gaps so cards NEVER touch */}
-      <div className="w-full max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-6 sm:gap-x-6 sm:gap-y-6 z-10 max-h-[74vh] overflow-y-auto sm:overflow-visible no-scrollbar p-1.5 select-none">
-        {CAMPAIGN_PROJECTS.map((project, idx) => {
-          // Check if image is a logo/white background asset
-          const isWhiteBgLogo =
-            project.image.includes('Insta_Saver_@gadjetsoman') ||
-            project.image.includes('Insta_Saver_@smoko_eats') ||
-            project.image.includes('IMG_2126') ||
-            project.image.includes('IMG_2127') ||
-            project.image.includes('649148396');
-
-          return (
-            <div
-              key={project.id}
-              id={`project-item-${idx}`}
-              onClick={() => onSelectProject(project)}
-              className="group relative rounded-2xl border border-white/15 bg-zinc-900/80 overflow-hidden backdrop-blur-md shadow-2xl hover:border-blue-500/60 hover:-translate-y-1.5 transition-all duration-300 aspect-square cursor-pointer p-3 flex flex-col justify-between"
-            >
-              {isWhiteBgLogo ? (
-                /* Inner Padded White Container with rounded corners framed inside the dark glass card */
-                <div className="w-full h-full bg-white rounded-xl p-3 sm:p-4 flex items-center justify-center shadow-inner overflow-hidden">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-              ) : (
-                /* Full Cover Image for Dark Campaign Graphics */
-                <div className="w-full h-full rounded-xl overflow-hidden relative">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-              )}
-
-              {/* Glass Hover Overlay displaying Client & Category */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-20 pointer-events-none">
-                <span className="text-[9px] font-mono text-blue-400 uppercase tracking-widest block font-bold">
-                  {project.client}
-                </span>
-                <p className="font-syne font-bold text-xs text-white leading-tight mt-1 line-clamp-2">
-                  {project.title}
-                </p>
-                <div className="mt-2 flex items-center gap-1.5 text-[10px] text-zinc-300 font-mono">
-                  <Eye className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Click to View</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-};
-</file>
-
-<file path="src/components/slides/Slide6WrapUp.tsx">
-import React, { useState } from 'react';
-import { CLIENT_BRANDS, PROFILE_DATA } from '../../data/portfolioData';
-import { TiltCard } from '../ui/be-ui-tilt-card';
-import { Mail, MessageCircle, MapPin, Copy, Check, ArrowUp, ShieldCheck } from 'lucide-react';
-
-interface Slide6WrapUpProps {
-  onRestart: () => void;
-}
-
-export const Slide6WrapUp: React.FC<Slide6WrapUpProps> = ({ onRestart }) => {
-  const [copiedText, setCopiedText] = useState<string | null>(null);
-
-  const handleCopy = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedText(label);
-    setTimeout(() => setCopiedText(null), 2500);
-  };
-
-  return (
-    <section
-      id="slide-6-wrapup"
-      className="slide-section w-screen h-screen relative flex flex-col items-center justify-between overflow-hidden snap-start px-6 sm:px-12 py-4 sm:py-6 bg-[#030305]"
-    >
-      {/* Corner Minimal Metadata */}
-      <div className="w-full max-w-6xl mx-auto flex items-center justify-between select-none z-20">
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
-            06 // BRANDS & INQUIRIES
-          </span>
-        </div>
-
-        <button
-          onClick={onRestart}
-          className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono tracking-[0.2em] text-zinc-400 hover:text-white transition-colors uppercase cursor-pointer"
-        >
-          <ArrowUp className="w-3.5 h-3.5" />
-          <span>Back to Top</span>
-        </button>
-      </div>
-
-      {/* Main Center Container */}
-      <div className="w-full max-w-5xl mx-auto flex flex-col items-center justify-center text-center z-10 my-auto">
-        
-        {/* TOP BRAND TICKER: 4 CLIENT BRANDS WITH LARGER READABLE TEXT */}
-        <div className="mb-4 sm:mb-5 w-full max-w-4xl">
-          <div className="flex items-center justify-center gap-2 mb-2.5 select-none">
-            <ShieldCheck className="w-4 h-4 text-blue-400" />
-            <span className="text-xs font-mono tracking-widest text-zinc-300 uppercase font-semibold">
-              Verified Client Collaborations & Retainers
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            {CLIENT_BRANDS.map((brand) => (
-              <TiltCard
-                key={brand.id}
-                max={12}
-                glare={true}
-                className="p-4 sm:p-5 rounded-2xl bg-white/[0.04] backdrop-blur-xl border border-white/10 hover:border-blue-500/50 shadow-2xl transition-all duration-300 text-left group h-full flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-900/80 to-zinc-900 border border-blue-500/40 flex items-center justify-center text-xs sm:text-sm font-syne font-black text-blue-300 group-hover:text-white shrink-0 shadow-md">
-                      {brand.initials}
-                    </span>
-                    <span className="text-xs font-mono text-blue-400 font-medium">{brand.location}</span>
-                  </div>
-                  <h4 className="text-sm sm:text-base font-syne font-bold text-white mt-2 group-hover:text-blue-300 transition-colors leading-snug">
-                    {brand.name}
-                  </h4>
-                  <p className="text-[12px] sm:text-xs text-zinc-300 font-jakarta leading-normal mt-1 font-normal">
-                    {brand.subtitle}
-                  </p>
-                </div>
-              </TiltCard>
-            ))}
-          </div>
-        </div>
-
-        {/* CENTERPIECE HEADLINE: MASSIVE PUNCHY 'LET'S CREATE.' OVER VIBRANT BLUE AURA */}
-        <div className="relative select-none flex flex-col items-center my-2 sm:my-3">
-          {/* Radiant Blue Aura Sphere directly behind headline */}
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-[500px] sm:h-[260px] rounded-full opacity-85 pointer-events-none"
-            style={{
-              background:
-                'radial-gradient(circle at center, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.75) 45%, rgba(56, 189, 248, 0.25) 75%, transparent 95%)',
-              filter: 'blur(45px)',
-            }}
-          />
-
-          <span className="text-xs sm:text-sm font-mono tracking-[0.35em] text-blue-400 uppercase font-semibold block mb-1.5 z-10">
-            Available For New Opportunities
-          </span>
-
-          <h2
-            id="contact-headline"
-            className="relative z-10 font-syne font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight text-white uppercase leading-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.9)]"
-            style={{ letterSpacing: '-0.03em' }}
-          >
-            LET'S CREATE.
-          </h2>
-
-          <p className="relative z-10 text-xs sm:text-sm font-jakarta tracking-wider text-zinc-300 max-w-lg mt-2 font-medium">
-            Transforming Creative Ideas into Digital Success
-          </p>
-        </div>
-
-        {/* HIGH-CONTRAST FLOATING ACTION PILLS */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-xl mt-4 sm:mt-5">
-          {/* Email Pill */}
+        {item.link ? (
           <a
-            href={`mailto:${PROFILE_DATA.email}`}
-            id="contact-email-btn"
-            className="w-full sm:w-auto px-5 py-2.5 sm:py-3 rounded-full bg-blue-600/15 hover:bg-blue-600/30 border border-blue-500/50 backdrop-blur-md text-xs sm:text-sm font-mono text-white transition-all flex items-center justify-center gap-2.5 shadow-xl hover:shadow-blue-500/20 group cursor-pointer"
+            href={item.link}
+            target={item.target}
+            rel={item.target === "_blank" ? "noreferrer" : undefined}
+            className="w-full h-full flex items-center justify-center text-white"
+            aria-label={item.label}
           >
-            <Mail className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
-            <span className="truncate">{PROFILE_DATA.email}</span>
+            {content}
           </a>
-
-          {/* WhatsApp Pill */}
-          <a
-            href={PROFILE_DATA.whatsappUrl}
-            target="_blank"
-            rel="noreferrer"
-            id="contact-phone-btn"
-            className="w-full sm:w-auto px-5 py-2.5 sm:py-3 rounded-full bg-emerald-600/15 hover:bg-emerald-600/30 border border-emerald-500/50 backdrop-blur-md text-xs sm:text-sm font-mono text-emerald-300 hover:text-white transition-all flex items-center justify-center gap-2.5 shadow-xl hover:shadow-emerald-500/20 group cursor-pointer"
-          >
-            <MessageCircle className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-            <span>{PROFILE_DATA.phone}</span>
-          </a>
-
-          {/* Location Badge Pill */}
-          <div
-            id="contact-location-badge"
-            className="w-full sm:w-auto px-4 py-2.5 sm:py-3 rounded-full bg-white/[0.05] border border-white/15 text-xs sm:text-sm font-mono text-zinc-300 flex items-center justify-center gap-2 shadow-lg backdrop-blur-md"
-          >
-            <MapPin className="w-4 h-4 text-zinc-400" />
-            <span>Based in Oman</span>
-          </div>
-        </div>
-
-        {/* Micro Copy Email & Number Buttons Bar */}
-        <div className="mt-3 sm:mt-4 flex items-center gap-3 text-xs font-mono">
+        ) : (
           <button
-            onClick={() => handleCopy(PROFILE_DATA.email, 'Email')}
-            className="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/12 text-zinc-300 hover:text-white text-[11px] flex items-center gap-1.5 transition-colors cursor-pointer border border-white/10 shadow"
+            type="button"
+            onClick={item.onClick}
+            className="w-full h-full flex items-center justify-center text-white cursor-pointer"
+            aria-label={item.label}
           >
-            {copiedText === 'Email' ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400 font-semibold">Email Copied!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5 text-blue-400" />
-                <span>Copy Email</span>
-              </>
-            )}
+            {content}
           </button>
-
-          <button
-            onClick={() => handleCopy(PROFILE_DATA.phone, 'Phone')}
-            className="px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/12 text-zinc-300 hover:text-white text-[11px] flex items-center gap-1.5 transition-colors cursor-pointer border border-white/10 shadow"
-          >
-            {copiedText === 'Phone' ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400 font-semibold">Number Copied!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Copy Phone</span>
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Bottom Footer Metadata */}
-      <div className="w-full max-w-6xl mx-auto flex items-center justify-between text-[10px] sm:text-[11px] font-mono tracking-[0.2em] text-zinc-500 uppercase z-20 select-none">
-        <span>© 2024 Mohamed Imtiaz • Digital Marketer & Designer</span>
-        <span>Muscat, Sultanate of Oman</span>
-      </div>
-    </section>
+        )}
+      </motion.div>
+    </div>
   );
 };
+
+export default AnimatedDock;
 </file>
 
 <file path="src/components/ui/be-ui-tilt-card.tsx">
@@ -983,6 +413,477 @@ export function TiltCard({
 }
 </file>
 
+<file path="src/components/ui/expand-map.tsx">
+"use client";
+
+import React, { useState, useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
+
+interface LocationMapProps {
+  location?: string;
+  coordinates?: string;
+  className?: string;
+}
+
+export function LocationMap({
+  location = "Muscat, Oman",
+  coordinates = "23.5880° N, 58.3829° E",
+  className = "",
+}: LocationMapProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const rotateX = useTransform(mouseY, [-50, 50], [8, -8]);
+  const rotateY = useTransform(mouseX, [-50, 50], [-8, 8]);
+
+  const springRotateX = useSpring(rotateX, { stiffness: 300, damping: 30 });
+  const springRotateY = useSpring(rotateY, { stiffness: 300, damping: 30 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    mouseX.set(e.clientX - centerX);
+    mouseY.set(e.clientY - centerY);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+    setIsHovered(false);
+  };
+
+  const handleClick = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  return (
+    <motion.div
+      ref={containerRef}
+      className={`relative cursor-pointer select-none ${className}`}
+      style={{
+        perspective: 1000,
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+    >
+      <motion.div
+        className="relative overflow-hidden rounded-2xl bg-zinc-950/90 border border-white/15 shadow-2xl backdrop-blur-xl"
+        style={{
+          rotateX: springRotateX,
+          rotateY: springRotateY,
+          transformStyle: "preserve-3d",
+        }}
+        animate={{
+          width: isExpanded ? 320 : 200,
+          height: isExpanded ? 220 : 70,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 400,
+          damping: 35,
+        }}
+      >
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/20 via-transparent to-black/50" />
+
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              className="absolute inset-0 pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <div className="absolute inset-0 bg-zinc-950" />
+
+              <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                {/* Main roads */}
+                <motion.line
+                  x1="0%"
+                  y1="35%"
+                  x2="100%"
+                  y2="35%"
+                  className="stroke-zinc-700/50"
+                  strokeWidth="4"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                />
+                <motion.line
+                  x1="0%"
+                  y1="65%"
+                  x2="100%"
+                  y2="65%"
+                  className="stroke-zinc-700/50"
+                  strokeWidth="4"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                />
+
+                {/* Vertical main roads */}
+                <motion.line
+                  x1="30%"
+                  y1="0%"
+                  x2="30%"
+                  y2="100%"
+                  className="stroke-zinc-700/40"
+                  strokeWidth="3"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                />
+                <motion.line
+                  x1="70%"
+                  y1="0%"
+                  x2="70%"
+                  y2="100%"
+                  className="stroke-zinc-700/40"
+                  strokeWidth="3"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                />
+
+                {/* Secondary streets */}
+                {[20, 50, 80].map((y, i) => (
+                  <motion.line
+                    key={`h-${i}`}
+                    x1="0%"
+                    y1={`${y}%`}
+                    x2="100%"
+                    y2={`${y}%`}
+                    className="stroke-zinc-800/60"
+                    strokeWidth="1.5"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.5, delay: 0.6 + i * 0.1 }}
+                  />
+                ))}
+                {[15, 45, 55, 85].map((x, i) => (
+                  <motion.line
+                    key={`v-${i}`}
+                    x1={`${x}%`}
+                    y1="0%"
+                    x2={`${x}%`}
+                    y2="100%"
+                    className="stroke-zinc-800/60"
+                    strokeWidth="1.5"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.5, delay: 0.7 + i * 0.1 }}
+                  />
+                ))}
+              </svg>
+
+              {/* Buildings */}
+              <motion.div
+                className="absolute top-[40%] left-[10%] w-[15%] h-[20%] rounded-sm bg-zinc-800/40 border border-zinc-700/30"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.5 }}
+              />
+              <motion.div
+                className="absolute top-[15%] left-[35%] w-[12%] h-[15%] rounded-sm bg-zinc-800/35 border border-zinc-700/25"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.6 }}
+              />
+              <motion.div
+                className="absolute top-[70%] left-[75%] w-[18%] h-[18%] rounded-sm bg-zinc-800/38 border border-zinc-700/28"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.7 }}
+              />
+              <motion.div
+                className="absolute top-[20%] right-[10%] w-[10%] h-[25%] rounded-sm bg-zinc-800/32 border border-zinc-700/25"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.55 }}
+              />
+
+              <motion.div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                initial={{ scale: 0, y: -20 }}
+                animate={{ scale: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.3 }}
+              >
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="drop-shadow-lg"
+                  style={{ filter: "drop-shadow(0 0 10px rgba(52, 211, 153, 0.7))" }}
+                >
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#34D399" />
+                  <circle cx="12" cy="9" r="2.5" className="fill-zinc-950" />
+                </svg>
+              </motion.div>
+
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Grid pattern - only show when collapsed */}
+        <motion.div
+          className="absolute inset-0 opacity-[0.05]"
+          animate={{ opacity: isExpanded ? 0 : 0.05 }}
+          transition={{ duration: 0.3 }}
+        >
+          <svg width="100%" height="100%" className="absolute inset-0">
+            <defs>
+              <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-white" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
+        </motion.div>
+
+        {/* Content */}
+        <div className="relative z-10 h-full flex flex-col justify-between p-3 sm:p-3.5 font-jakarta">
+          {/* Top section */}
+          <div className="flex items-start justify-between">
+            <div className="relative">
+              <motion.div
+                className="relative"
+                animate={{
+                  opacity: isExpanded ? 0 : 1,
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Map Icon SVG */}
+                <motion.svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-emerald-400"
+                  animate={{
+                    filter: isHovered
+                      ? "drop-shadow(0 0 8px rgba(52, 211, 153, 0.8))"
+                      : "drop-shadow(0 0 4px rgba(52, 211, 153, 0.4))",
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                  <line x1="9" x2="9" y1="3" y2="18" />
+                  <line x1="15" x2="15" y1="6" y2="21" />
+                </motion.svg>
+              </motion.div>
+            </div>
+
+            {/* Status indicator */}
+            <motion.div
+              className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/10"
+              animate={{
+                scale: isHovered ? 1.05 : 1,
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[9px] font-mono text-zinc-300 tracking-wide uppercase">Live</span>
+            </motion.div>
+          </div>
+
+          {/* Bottom section */}
+          <div className="space-y-0.5 text-left">
+            <motion.h3
+              className="text-white font-bold text-xs sm:text-xs tracking-tight"
+              animate={{
+                x: isHovered ? 4 : 0,
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            >
+              {location}
+            </motion.h3>
+
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.p
+                  className="text-zinc-400 text-[10px] font-mono"
+                  initial={{ opacity: 0, y: -10, height: 0 }}
+                  animate={{ opacity: 1, y: 0, height: "auto" }}
+                  exit={{ opacity: 0, y: -10, height: 0 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  {coordinates}
+                </motion.p>
+              )}
+            </AnimatePresence>
+
+            {/* Animated underline */}
+            <motion.div
+              className="h-px bg-gradient-to-r from-emerald-500/80 via-emerald-400/40 to-transparent mt-0.5"
+              initial={{ scaleX: 0, originX: 0 }}
+              animate={{
+                scaleX: isHovered || isExpanded ? 1 : 0.3,
+              }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            />
+          </div>
+        </div>
+
+      </motion.div>
+
+      {/* Click hint */}
+      <motion.p
+        className="absolute -bottom-4 left-1/2 text-[9px] font-mono text-zinc-400 whitespace-nowrap"
+        style={{ x: "-50%" }}
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: isHovered && !isExpanded ? 1 : 0,
+          y: isHovered ? 0 : 4,
+        }}
+        transition={{ duration: 0.2 }}
+      >
+        Click to expand
+      </motion.p>
+    </motion.div>
+  );
+}
+
+export default LocationMap;
+</file>
+
+<file path="src/components/ui/gradient-bold-card.tsx">
+"use client";
+
+import React from "react";
+
+export interface GradientBlobCardProps {
+  children?: React.ReactNode;
+  className?: string;
+  containerClassName?: string;
+  blobGradient?: string;
+}
+
+const GradientBlobCard: React.FC<GradientBlobCardProps> = ({
+  children,
+  className = "",
+  containerClassName = "",
+  blobGradient = "from-pink-500 via-red-500 to-yellow-500",
+}) => {
+  if (!children) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="relative w-[200px] h-[250px] rounded-[14px] flex flex-col items-center justify-center
+                        shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] dark:shadow-[20px_20px_60px_#111,-20px_-20px_60px_#222]
+                        overflow-hidden">
+
+          {/* Glassy Background */}
+          <div className="absolute top-[5px] left-[5px] w-[190px] h-[240px] bg-white/95 dark:bg-black/70 backdrop-blur-[24px]
+                          rounded-[10px] outline outline-2 outline-white dark:outline-gray-700 z-10"></div>
+
+          {/* Animated Gradient Blob (same bold colors for light & dark mode) */}
+          <div className="absolute top-1/2 left-1/2 w-[150px] h-[150px] rounded-full opacity-100
+                          filter blur-[12px] z-0 animate-blob 
+                          bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500"></div>
+
+          {/* Inline keyframes animation */}
+          <style>
+            {`
+              @keyframes blob {
+                0% {
+                  transform: translate(-100%, -100%);
+                }
+                25% {
+                  transform: translate(0%, -100%);
+                }
+                50% {
+                  transform: translate(0%, 0%);
+                }
+                75% {
+                  transform: translate(-100%, 0%);
+                }
+                100% {
+                  transform: translate(-100%, -100%);
+                }
+              }
+
+              .animate-blob {
+                animation: blob 5s linear infinite;
+              }
+            `}
+          </style>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`relative rounded-[14px] overflow-hidden h-full flex flex-col justify-between
+                  shadow-[10px_10px_30px_rgba(0,0,0,0.6),-10px_-10px_30px_rgba(30,30,40,0.3)]
+                  dark:shadow-[10px_10px_30px_rgba(0,0,0,0.7),-10px_-10px_30px_rgba(255,255,255,0.03)]
+                  group hover:scale-[1.015] transition-all duration-300 ${containerClassName}`}
+    >
+      {/* Glassy Background Inner Layer */}
+      <div
+        className="absolute inset-[5px] bg-black/80 dark:bg-zinc-950/85 backdrop-blur-[24px]
+                    rounded-[10px] outline outline-1 outline-white/10 dark:outline-gray-800/80 z-10 transition-all duration-300 group-hover:outline-white/25"
+      />
+
+      {/* Content wrapper on top of glassy background */}
+      <div className={`relative z-20 h-full p-4 sm:p-5 flex flex-col justify-between ${className}`}>
+        {children}
+      </div>
+
+      {/* Animated Gradient Blob */}
+      <div
+        className={`absolute top-1/2 left-1/2 w-[160px] h-[160px] rounded-full opacity-90
+                    filter blur-[16px] z-0 animate-blob 
+                    bg-gradient-to-r ${blobGradient}`}
+      />
+
+      {/* Inline keyframes animation */}
+      <style>
+        {`
+          @keyframes blob {
+            0% {
+              transform: translate(-100%, -100%);
+            }
+            25% {
+              transform: translate(0%, -100%);
+            }
+            50% {
+              transform: translate(0%, 0%);
+            }
+            75% {
+              transform: translate(-100%, 0%);
+            }
+            100% {
+              transform: translate(-100%, -100%);
+            }
+          }
+
+          .animate-blob {
+            animation: blob 5s linear infinite;
+          }
+        `}
+      </style>
+    </div>
+  );
+};
+
+export default GradientBlobCard;
+</file>
+
 <file path="src/components/AuraBackground.tsx">
 import React from 'react';
 
@@ -994,86 +895,38 @@ export const AuraBackground: React.FC<AuraBackgroundProps> = ({ activeSlide }) =
   return (
     <div
       id="ambient-aura-layer"
-      className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#000000]"
+      className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#030305]"
       aria-hidden="true"
     >
-      {/* SLIDE 1 (Index 0): COMPACT GLOWING BLUE/VIOLET RIBBON */}
+      {/* SLIDE 1 (Index 0): Intro Glowing Blue/Violet Ribbon */}
       <div
         id="slide-1-glowing-ribbon"
-        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${activeSlide === 0 ? 'opacity-100' : 'opacity-0'
-          }`}
+        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+          activeSlide === 0 ? 'opacity-100' : 'opacity-0'
+        }`}
       >
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[220px] rotate-[-20deg] rounded-[100%] opacity-90"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[260px] rotate-[-20deg] rounded-[100%] opacity-90 blur-3xl translate-z-0 will-change-transform"
           style={{
             background:
               'radial-gradient(ellipse at center, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.8) 35%, rgba(99, 102, 241, 0.55) 60%, rgba(168, 85, 247, 0.25) 80%, transparent 95%)',
-            filter: 'blur(45px)',
           }}
         />
-
-        <svg
-          viewBox="0 0 1440 900"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full object-cover overflow-visible"
-        >
-          <defs>
-            <linearGradient id="ribbonGradient" x1="380" y1="580" x2="1060" y2="320" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#1d4ed8" stopOpacity="0.95" />
-              <stop offset="25%" stopColor="#2563eb" stopOpacity="1" />
-              <stop offset="50%" stopColor="#3b82f6" stopOpacity="1" />
-              <stop offset="72%" stopColor="#6366f1" stopOpacity="0.9" />
-              <stop offset="90%" stopColor="#a855f7" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.85" />
-            </linearGradient>
-
-            <filter id="ribbonWideGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="45" result="blurWide" />
-            </filter>
-            <filter id="ribbonMediumGlow" x="-40%" y="-40%" width="180%" height="180%">
-              <feGaussianBlur stdDeviation="28" result="blurMed" />
-            </filter>
-            <filter id="ribbonIntenseCore" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="16" result="blurCore" />
-            </filter>
-          </defs>
-
-          <path
-            d="M 360 570 C 500 580, 640 480, 720 450 C 800 420, 940 330, 1080 330"
-            stroke="url(#ribbonGradient)"
-            strokeWidth="110"
-            strokeLinecap="round"
-            filter="url(#ribbonWideGlow)"
-            opacity="0.9"
-          />
-          <path
-            d="M 360 570 C 500 580, 640 480, 720 450 C 800 420, 940 330, 1080 330"
-            stroke="url(#ribbonGradient)"
-            strokeWidth="70"
-            strokeLinecap="round"
-            filter="url(#ribbonMediumGlow)"
-            opacity="0.95"
-          />
-          <path
-            d="M 370 565 C 505 575, 645 475, 720 450 C 795 425, 935 335, 1070 335"
-            stroke="url(#ribbonGradient)"
-            strokeWidth="42"
-            strokeLinecap="round"
-            filter="url(#ribbonIntenseCore)"
-            opacity="1"
-          />
-
-          <circle cx="1010" cy="340" r="70" fill="#a855f7" opacity="0.45" filter="url(#ribbonWideGlow)" />
-          <circle cx="1040" cy="330" r="50" fill="#38bdf8" opacity="0.4" filter="url(#ribbonMediumGlow)" />
-        </svg>
+        <div
+          className="absolute top-1/3 left-1/4 w-[420px] h-[200px] rotate-[15deg] rounded-full opacity-70 blur-3xl translate-z-0 will-change-transform"
+          style={{
+            background:
+              'radial-gradient(ellipse at center, rgba(56, 189, 248, 0.7) 0%, rgba(37, 99, 235, 0.5) 50%, transparent 85%)',
+          }}
+        />
       </div>
 
-      {/* SLIDE 2 (Index 1): Dynamic Ambient Blue Studio Glow behind Profile Photo */}
+      {/* SLIDE 2 (Index 1): About Ambient Studio Glow */}
       <div
         id="slide-2-ambient-orb"
-        className={`absolute rounded-full transition-all duration-1000 ease-out will-change-transform ${activeSlide === 1 ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
-          }`}
+        className={`absolute rounded-full transition-all duration-1000 ease-out blur-3xl translate-z-0 will-change-transform ${
+          activeSlide === 1 ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
+        }`}
         style={{
           left: '24%',
           top: '48%',
@@ -1082,18 +935,18 @@ export const AuraBackground: React.FC<AuraBackgroundProps> = ({ activeSlide }) =
           height: '640px',
           background:
             'radial-gradient(circle at center, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.7) 35%, rgba(15, 23, 42, 0.25) 70%, transparent 85%)',
-          filter: 'blur(90px)',
         }}
       />
 
-      {/* SLIDE 3 (Index 2): Table of Content Ambient Orbs */}
+      {/* SLIDE 3 (Index 2): Experience Orbs */}
       <div
         id="slide-3-ambient-layer"
-        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${activeSlide === 2 ? 'opacity-100' : 'opacity-0'
-          }`}
+        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+          activeSlide === 2 ? 'opacity-100' : 'opacity-0'
+        }`}
       >
         <div
-          className="absolute rounded-full"
+          className="absolute rounded-full blur-3xl translate-z-0 will-change-transform"
           style={{
             left: '22%',
             top: '50%',
@@ -1102,12 +955,10 @@ export const AuraBackground: React.FC<AuraBackgroundProps> = ({ activeSlide }) =
             height: '420px',
             background:
               'radial-gradient(circle at center, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.8) 45%, rgba(56, 189, 248, 0.4) 75%, transparent 90%)',
-            filter: 'blur(55px)',
           }}
         />
-
         <div
-          className="absolute rounded-[100%] opacity-90"
+          className="absolute rounded-[100%] opacity-90 blur-3xl translate-z-0 will-change-transform"
           style={{
             right: '-80px',
             bottom: '-100px',
@@ -1116,40 +967,40 @@ export const AuraBackground: React.FC<AuraBackgroundProps> = ({ activeSlide }) =
             transform: 'rotate(-25deg)',
             background:
               'radial-gradient(ellipse at center, rgba(37, 99, 235, 0.9) 0%, rgba(29, 78, 216, 0.75) 40%, rgba(56, 189, 248, 0.35) 70%, transparent 90%)',
-            filter: 'blur(65px)',
           }}
         />
       </div>
 
-      {/* SLIDE 4 (Index 3): Section Divider Centered Sphere Orb */}
+      {/* SLIDE 4 (Index 3): Services Centered Glow */}
       <div
         id="slide-4-ambient-layer"
-        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${activeSlide === 3 ? 'opacity-100' : 'opacity-0'
-          }`}
+        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+          activeSlide === 3 ? 'opacity-100' : 'opacity-0'
+        }`}
       >
         <div
-          className="absolute rounded-full"
+          className="absolute rounded-full blur-3xl translate-z-0 will-change-transform"
           style={{
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '460px',
-            height: '460px',
+            width: '480px',
+            height: '480px',
             background:
               'radial-gradient(circle at center, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.8) 45%, rgba(56, 189, 248, 0.35) 75%, transparent 95%)',
-            filter: 'blur(40px)',
           }}
         />
       </div>
 
-      {/* SLIDE 5 (Index 4): Projects Showcase Subtle Top-Right Glow */}
+      {/* SLIDE 5 (Index 4): Projects Top-Right Subtle Glow */}
       <div
         id="slide-5-ambient-layer"
-        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${activeSlide === 4 ? 'opacity-100' : 'opacity-0'
-          }`}
+        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+          activeSlide === 4 ? 'opacity-100' : 'opacity-0'
+        }`}
       >
         <div
-          className="absolute rounded-full"
+          className="absolute rounded-full blur-3xl translate-z-0 will-change-transform"
           style={{
             right: '10%',
             top: '20%',
@@ -1157,19 +1008,61 @@ export const AuraBackground: React.FC<AuraBackgroundProps> = ({ activeSlide }) =
             height: '480px',
             background:
               'radial-gradient(circle at center, rgba(37, 99, 235, 0.85) 0%, rgba(29, 78, 216, 0.6) 40%, transparent 80%)',
-            filter: 'blur(75px)',
           }}
         />
       </div>
 
-      {/* SLIDE 6 (Index 5): Brands & Contact Central Luminous Orb */}
+      {/* SLIDE 6 (Index 5): Client Brands Glow */}
       <div
         id="slide-6-ambient-layer"
-        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${activeSlide === 5 ? 'opacity-100' : 'opacity-0'
-          }`}
+        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+          activeSlide === 5 ? 'opacity-100' : 'opacity-0'
+        }`}
       >
         <div
-          className="absolute rounded-full"
+          className="absolute rounded-full blur-3xl translate-z-0 will-change-transform"
+          style={{
+            left: '30%',
+            top: '45%',
+            transform: 'translate(-50%, -50%)',
+            width: '500px',
+            height: '400px',
+            background:
+              'radial-gradient(ellipse at center, rgba(37, 99, 235, 0.85) 0%, rgba(29, 78, 216, 0.65) 45%, rgba(56, 189, 248, 0.25) 75%, transparent 95%)',
+          }}
+        />
+      </div>
+
+      {/* SLIDE 7 (Index 6): Why Me Advantage Luminous Orb */}
+      <div
+        id="slide-7-ambient-layer"
+        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+          activeSlide === 6 ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        <div
+          className="absolute rounded-full blur-3xl translate-z-0 will-change-transform"
+          style={{
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '520px',
+            height: '420px',
+            background:
+              'radial-gradient(circle at center, rgba(37, 99, 235, 0.9) 0%, rgba(29, 78, 216, 0.7) 45%, rgba(56, 189, 248, 0.3) 75%, transparent 95%)',
+          }}
+        />
+      </div>
+
+      {/* SLIDE 8 (Index 7): Final Contact Luminous Blue Orb */}
+      <div
+        id="slide-8-ambient-layer"
+        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+          activeSlide === 7 ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        <div
+          className="absolute rounded-full blur-3xl translate-z-0 will-change-transform"
           style={{
             left: '50%',
             top: '50%',
@@ -1178,12 +1071,11 @@ export const AuraBackground: React.FC<AuraBackgroundProps> = ({ activeSlide }) =
             height: '380px',
             background:
               'radial-gradient(ellipse at center, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.75) 45%, rgba(56, 189, 248, 0.3) 75%, transparent 95%)',
-            filter: 'blur(60px)',
           }}
         />
       </div>
 
-      {/* Subtle fine digital noise texture */}
+      {/* Digital noise texture */}
       <div
         className="absolute inset-0 opacity-[0.02] pointer-events-none"
         style={{
@@ -1198,187 +1090,9 @@ export const AuraBackground: React.FC<AuraBackgroundProps> = ({ activeSlide }) =
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(circle at center, transparent 50%, rgba(0, 0, 0, 0.75) 85%, #000000 100%)',
+          background: 'radial-gradient(circle at center, transparent 50%, rgba(0, 0, 0, 0.75) 85%, #030305 100%)',
         }}
       />
-    </div>
-  );
-};
-</file>
-
-<file path="src/components/ImageModal.tsx">
-import React from 'react';
-import { X, ExternalLink } from 'lucide-react';
-
-interface ImageModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  image: string;
-  title: string;
-  category?: string;
-  client?: string;
-  description?: string;
-}
-
-export const ImageModal: React.FC<ImageModalProps> = ({
-  isOpen,
-  onClose,
-  image,
-  title,
-  category,
-  client,
-  description,
-}) => {
-  if (!isOpen) return null;
-
-  return (
-    <div
-      id="portfolio-image-modal"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 bg-black/90 backdrop-blur-xl transition-all duration-300 animate-in fade-in"
-      onClick={onClose}
-    >
-      <div
-        className="relative max-w-4xl w-full bg-zinc-950/80 border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row items-stretch"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Close Button */}
-        <button
-          id="btn-close-modal"
-          onClick={onClose}
-          aria-label="Close modal"
-          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 border border-white/15 text-zinc-400 hover:text-white hover:bg-black/90 flex items-center justify-center transition-all cursor-pointer"
-        >
-          <X className="w-4 h-4" />
-        </button>
-
-        {/* Media Frame */}
-        <div className="md:w-3/5 bg-black/60 flex items-center justify-center p-4 border-b md:border-b-0 md:border-r border-white/10">
-          <img
-            src={image}
-            alt={title}
-            className="max-h-[70vh] w-auto object-contain rounded-lg shadow-xl"
-          />
-        </div>
-
-        {/* Metadata Details */}
-        <div className="md:w-2/5 p-6 sm:p-8 flex flex-col justify-between bg-zinc-950/95">
-          <div>
-            {category && (
-              <span className="text-[11px] font-mono tracking-widest text-blue-400 uppercase block mb-2">
-                {category}
-              </span>
-            )}
-            <h3 className="font-syne font-bold text-2xl text-white tracking-tight mb-2">
-              {title}
-            </h3>
-            {client && (
-              <p className="text-xs font-mono text-zinc-400 uppercase tracking-wider mb-4">
-                Client: <span className="text-zinc-200">{client}</span>
-              </p>
-            )}
-            {description && (
-              <p className="text-sm text-zinc-300 leading-relaxed font-sans mt-3">
-                {description}
-              </p>
-            )}
-          </div>
-
-          <div className="pt-6 border-t border-white/10 mt-6 flex items-center justify-between">
-            <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
-              Mohamed Imtiaz Portfolio
-            </span>
-            <button
-              onClick={onClose}
-              className="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-mono text-white transition-colors cursor-pointer"
-            >
-              Close [ESC]
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-</file>
-
-<file path="src/components/SlideNav.tsx">
-import React from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
-
-interface SlideNavProps {
-  currentSlide: number;
-  totalSlides: number;
-  onSelectSlide: (index: number) => void;
-  onPrev: () => void;
-  onNext: () => void;
-}
-
-export const SlideNav: React.FC<SlideNavProps> = ({
-  currentSlide,
-  totalSlides,
-  onSelectSlide,
-  onPrev,
-  onNext,
-}) => {
-  return (
-    <div
-      id="slide-deck-controller"
-      className="fixed right-5 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-3 select-none pointer-events-auto"
-    >
-      {/* Up Button */}
-      <button
-        id="btn-slide-prev"
-        onClick={onPrev}
-        disabled={currentSlide === 0}
-        aria-label="Previous slide"
-        className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-zinc-500 transition-all cursor-pointer"
-      >
-        <ChevronUp className="w-4 h-4" />
-      </button>
-
-      {/* Slide Dots Indicator */}
-      <div className="flex flex-col gap-2 py-2">
-        {Array.from({ length: totalSlides }).map((_, idx) => {
-          const isActive = currentSlide === idx;
-          return (
-            <button
-              key={idx}
-              id={`slide-dot-${idx}`}
-              onClick={() => onSelectSlide(idx)}
-              aria-label={`Jump to slide ${idx + 1}`}
-              className="group relative flex items-center justify-center p-1 cursor-pointer focus:outline-none"
-            >
-              <span
-                className={`block rounded-full transition-all duration-300 ${
-                  isActive
-                    ? 'w-2 h-6 bg-white shadow-[0_0_12px_rgba(37,99,235,0.9)]'
-                    : 'w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-300 group-hover:scale-125'
-                }`}
-              />
-              {/* Tooltip on hover */}
-              <span className="absolute right-7 px-2 py-0.5 text-[10px] tracking-widest font-mono text-zinc-400 bg-zinc-900/90 border border-white/10 rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">
-                0{idx + 1}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Down Button */}
-      <button
-        id="btn-slide-next"
-        onClick={onNext}
-        disabled={currentSlide === totalSlides - 1}
-        aria-label="Next slide"
-        className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-zinc-500 transition-all cursor-pointer"
-      >
-        <ChevronDown className="w-4 h-4" />
-      </button>
-
-      {/* Minimal Numeric Slide Counter */}
-      <div className="mt-1 text-[10px] font-mono tracking-widest text-zinc-500">
-        0{currentSlide + 1}
-      </div>
     </div>
   );
 };
@@ -1409,18 +1123,34 @@ export interface ClientBrand {
 export const PROFILE_DATA = {
   name: "Mohamed Imtiaz",
   role: "Digital Marketer | Graphic Designer | Social Media Manager",
-  tagline: "Creative Ideas. Strategic Marketing. Powerful Results.",
+  tagline: "Let's Create. Market. Grow.",
   location: "Muscat, Sultanate of Oman",
   email: "mohamedimtiazmsmax@gmail.com",
   phone: "+968 9243 4052",
   whatsappUrl: "https://wa.me/96892434052",
-  linkedinUrl: "https://linkedin.com",
+  linkedinUrl: "https://www.linkedin.com/in/imtiaz007?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
   instagramUrl: "https://instagram.com",
   tiktokUrl: "https://tiktok.com",
-  headshot: "/images/imtiyaz.jpg",
+  headshot: "/images/imtiyaz.png",
+  resumeUrl: "/Mohamed_Imtiaz_Resume.pdf",
 
   about:
-    "I am Mohamed Imtiaz, a creative and results-driven Digital Marketer with a strong background in Graphic Design, Video Editing, Social Media Management, and Digital Marketing. Currently based in Oman, I work at MS Max handling digital marketing and campaign initiatives. I believe successful marketing connects creativity with strategy, consistency, and a deep understanding of the audience.",
+    "I am Mohamed Imtiaz, a creative and results-driven Digital Marketer with a strong background in Graphic Design, Video Editing, Social Media Management, and Performance Marketing. Currently based in Oman, I work at MS Max handling digital marketing and campaign initiatives. I believe successful marketing connects creativity with strategy, consistency, and a deep understanding of the audience.",
+
+  whyWorkWithMe: [
+    {
+      title: "Strategy + Creative Integration",
+      description: "Combining high-converting ad visuals, brand design, and video reels with data-driven audience targeting.",
+    },
+    {
+      title: "Regional GCC & Oman Market Depth",
+      description: "Hands-on experience crafting campaigns tailored to Oman and GCC consumer behavior and regional trends.",
+    },
+    {
+      title: "Measurable Growth & ROI Focus",
+      description: "Delivering performance Meta ads, corporate PR visibility, and structured retainer account management.",
+    },
+  ],
 
   education: [
     {
@@ -1455,6 +1185,33 @@ export const PROFILE_DATA = {
     },
   ],
 
+  services: [
+    {
+      number: "01",
+      title: "Performance Marketing & Ads",
+      description: "High-converting Meta & Google ad campaigns engineered for reach, click-through rate, and lead generation.",
+      tags: ["Meta Ads", "Campaign Strategy", "A/B Testing", "ROI Focus"],
+    },
+    {
+      number: "02",
+      title: "Social Media Management",
+      description: "End-to-end feed curation, content calendars, audience engagement, and strategic brand positioning.",
+      tags: ["Content Strategy", "Feed Planning", "Community Reach", "Analytics"],
+    },
+    {
+      number: "03",
+      title: "Graphic Design & Brand Identity",
+      description: "Polished promotional collateral, brand guidelines, event banners, and corporate graphics.",
+      tags: ["Photoshop", "Illustrator", "Brand Visuals", "Marketing Creatives"],
+    },
+    {
+      number: "04",
+      title: "Video Editing & Motion Reels",
+      description: "Dynamic video promos, short-form reels, and motion graphic assets built to captivate audiences on social platforms.",
+      tags: ["Premiere Pro", "After Effects", "CapCut", "Reels & Promo"],
+    },
+  ],
+
   tools: [
     { name: "Photoshop", abbr: "Ps", textColor: "text-[#31a8ff]", borderColor: "border-[#001e36]", bg: "bg-[#001e36]/80" },
     { name: "Illustrator", abbr: "Ai", textColor: "text-[#ff9a00]", borderColor: "border-[#331c00]", bg: "bg-[#331c00]/80" },
@@ -1465,62 +1222,20 @@ export const PROFILE_DATA = {
   secondaryTools: [
     { name: "Canva", label: "Canva", color: "text-cyan-400" },
     { name: "CapCut", label: "CapCut", color: "text-white" },
-    { name: "Meta Ads", label: "Meta Business", color: "text-blue-400" },
+    { name: "Meta Business Suite", label: "Meta Business Suite", color: "text-blue-400" },
+    { name: "TikTok Marketing", label: "TikTok Marketing", color: "text-pink-400" },
+    { name: "AI Content Creation", label: "AI Content Creation", color: "text-emerald-400" },
     { name: "Google Ads", label: "Google Ads", color: "text-amber-400" },
     { name: "HubSpot", label: "HubSpot", color: "text-orange-400" },
   ],
 
-  approach: [
-    {
-      step: "01",
-      title: "UNDERSTAND",
-      description: "Brand goals, audience research & marketing targets.",
-    },
-    {
-      step: "02",
-      title: "CREATE",
-      description: "High-converting visuals, engaging reels & promotional copy.",
-    },
-    {
-      step: "03",
-      title: "STRATEGIZE",
-      description: "Targeted digital campaigns, Meta ads & audience reach.",
-    },
-    {
-      step: "04",
-      title: "GROW",
-      description: "Brand awareness, consistent engagement & measurable growth.",
-    },
-  ],
-
   socials: [
-    { name: "LinkedIn", url: "https://linkedin.com", icon: "linkedin" },
+    { name: "LinkedIn", url: "https://www.linkedin.com/in/imtiaz007?utm_source=share_via&utm_content=profile&utm_medium=member_ios", icon: "linkedin" },
     { name: "Instagram", url: "https://instagram.com", icon: "instagram" },
     { name: "WhatsApp", url: "https://wa.me/96892434052", icon: "whatsapp" },
     { name: "Email", url: "mailto:mohamedimtiazmsmax@gmail.com", icon: "mail" },
   ],
 };
-
-export const TOC_ITEMS = [
-  {
-    number: "01",
-    label: "CAMPAIGNS & POSTERS",
-    subtext: "Ad Creatives & Brand Graphics",
-    targetSlide: 4, // Slide index for Slide 5
-  },
-  {
-    number: "02",
-    label: "CLIENT BRANDS",
-    subtext: "Verified Collaborations & Retainers",
-    targetSlide: 5, // Slide index for Slide 6
-  },
-  {
-    number: "03",
-    label: "CONTACT & INQUIRIES",
-    subtext: "Direct Booking & Location Details",
-    targetSlide: 5, // Slide index for Slide 6
-  },
-];
 
 // Verified Real Campaign Projects by Mohamed Imtiaz
 export const CAMPAIGN_PROJECTS: ProjectItem[] = [
@@ -1632,290 +1347,6 @@ export const CLIENT_BRANDS: ClientBrand[] = [
 ];
 </file>
 
-<file path="src/App.tsx">
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { AuraBackground } from './components/AuraBackground';
-import { SlideNav } from './components/SlideNav';
-import { ImageModal } from './components/ImageModal';
-import { Slide1Intro } from './components/slides/Slide1Intro';
-import { Slide2About } from './components/slides/Slide2About';
-import { Slide3Toc } from './components/slides/Slide3Toc';
-import { Slide4Category } from './components/slides/Slide4Category';
-import { Slide5Projects } from './components/slides/Slide5Projects';
-import { Slide6WrapUp } from './components/slides/Slide6WrapUp';
-import { ProjectItem } from './data/portfolioData';
-
-export default function App() {
-  const [activeSlide, setActiveSlide] = useState<number>(0);
-  const totalSlides = 6;
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Modal Lightbox state
-  const [modalData, setModalData] = useState<{
-    isOpen: boolean;
-    image: string;
-    title: string;
-    category?: string;
-    client?: string;
-    description?: string;
-  }>({
-    isOpen: false,
-    image: '',
-    title: '',
-  });
-
-  // Smooth slide jump handler
-  const scrollToSlide = useCallback((index: number) => {
-    if (!containerRef.current) return;
-    const clampedIndex = Math.max(0, Math.min(index, totalSlides - 1));
-    const targetY = clampedIndex * window.innerHeight;
-
-    containerRef.current.scrollTo({
-      top: targetY,
-      behavior: 'smooth',
-    });
-    setActiveSlide(clampedIndex);
-  }, [totalSlides]);
-
-  const handleNextSlide = () => scrollToSlide(activeSlide + 1);
-  const handlePrevSlide = () => scrollToSlide(activeSlide - 1);
-
-  // Monitor scroll position
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    let ticking = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const scrollTop = container.scrollTop;
-          const slideHeight = window.innerHeight;
-          const current = Math.round(scrollTop / slideHeight);
-          setActiveSlide(Math.max(0, Math.min(current, totalSlides - 1)));
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    container.addEventListener('scroll', handleScroll, { passive: true });
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, [totalSlides]);
-
-  // Keyboard Navigation for presentation slide-deck
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // If modal is open, ESC closes it
-      if (modalData.isOpen) {
-        if (e.key === 'Escape') {
-          setModalData((prev) => ({ ...prev, isOpen: false }));
-        }
-        return;
-      }
-
-      switch (e.key) {
-        case 'ArrowDown':
-        case 'PageDown':
-        case ' ': // Spacebar
-          e.preventDefault();
-          handleNextSlide();
-          break;
-        case 'ArrowUp':
-        case 'PageUp':
-          e.preventDefault();
-          handlePrevSlide();
-          break;
-        case 'Home':
-          e.preventDefault();
-          scrollToSlide(0);
-          break;
-        case 'End':
-          e.preventDefault();
-          scrollToSlide(totalSlides - 1);
-          break;
-        default:
-          break;
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeSlide, modalData.isOpen, scrollToSlide]);
-
-  // Project item preview
-  const handleSelectProject = (project: ProjectItem) => {
-    setModalData({
-      isOpen: true,
-      image: project.image,
-      title: project.title,
-      category: project.category,
-      client: project.client,
-      description: project.description,
-    });
-  };
-
-  return (
-    <main
-      id="presentation-viewport"
-      className="w-screen h-screen bg-[#030305] text-white overflow-hidden relative select-none font-sans"
-    >
-      {/* Dynamic Animated Glowing Blue Aura Background */}
-      <AuraBackground activeSlide={activeSlide} />
-
-      {/* Fullscreen Snap Container */}
-      <div
-        ref={containerRef}
-        id="fullscreen-slides-viewport"
-        className="slides-container w-screen h-screen overflow-y-scroll overflow-x-hidden no-scrollbar relative z-10"
-      >
-        {/* SLIDE 1: INTRO COVER */}
-        <Slide1Intro onExplore={handleNextSlide} />
-
-        {/* SLIDE 2: ABOUT & PROFILE */}
-        <Slide2About />
-
-        {/* SLIDE 3: TABLE OF CONTENTS */}
-        <Slide3Toc onNavigateToSlide={scrollToSlide} />
-
-        {/* SLIDE 4: SECTION DIVIDER (SELECTED CAMPAIGNS) */}
-        <Slide4Category onNext={handleNextSlide} />
-
-        {/* SLIDE 5: CAMPAIGN WORK SHOWCASE */}
-        <Slide5Projects onSelectProject={handleSelectProject} />
-
-        {/* SLIDE 6: VERIFIED BRANDS & FINAL CONTACT */}
-        <Slide6WrapUp onRestart={() => scrollToSlide(0)} />
-      </div>
-
-      {/* Slide Deck Side Controller */}
-      <SlideNav
-        currentSlide={activeSlide}
-        totalSlides={totalSlides}
-        onSelectSlide={scrollToSlide}
-        onPrev={handlePrevSlide}
-        onNext={handleNextSlide}
-      />
-
-      {/* Image Detail Lightbox Modal */}
-      <ImageModal
-        isOpen={modalData.isOpen}
-        onClose={() => setModalData((prev) => ({ ...prev, isOpen: false }))}
-        image={modalData.image}
-        title={modalData.title}
-        category={modalData.category}
-        client={modalData.client}
-        description={modalData.description}
-      />
-    </main>
-  );
-}
-</file>
-
-<file path="src/index.css">
-@import "tailwindcss";
-
-@layer base {
-  :root {
-    --font-syne: 'Syne', sans-serif;
-    --font-inter: 'Inter', sans-serif;
-  }
-
-  body {
-    font-family: var(--font-inter);
-    background-color: #030305;
-    color: #ffffff;
-  }
-}
-
-.font-syne {
-  font-family: 'Syne', sans-serif;
-}
-
-.font-syncopate {
-  font-family: 'Syncopate', sans-serif;
-  letter-spacing: 0.04em;
-}
-
-.font-unbounded {
-  font-family: 'Unbounded', sans-serif;
-}
-
-.font-inter {
-  font-family: 'Inter', sans-serif;
-}
-
-.font-jakarta {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-/* Hide default scrollbars for pure slide-deck presentation look */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* CSS Scroll Snap Container */
-.slides-container {
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-  overscroll-behavior-y: contain;
-}
-
-.slide-section {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-}
-
-/* Subtle glow orb pulse keyframes */
-@keyframes orb-pulse {
-
-  0%,
-  100% {
-    transform: scale(1) translate(0px, 0px);
-    opacity: 0.85;
-  }
-
-  50% {
-    transform: scale(1.08) translate(15px, -10px);
-    opacity: 1;
-  }
-}
-
-@keyframes orb-float-alt {
-
-  0%,
-  100% {
-    transform: scale(1.05) translate(-10px, 10px) rotate(0deg);
-    opacity: 0.75;
-  }
-
-  50% {
-    transform: scale(0.95) translate(20px, -15px) rotate(15deg);
-    opacity: 0.95;
-  }
-}
-
-.animate-orb {
-  animation: orb-pulse 8s ease-in-out infinite;
-}
-
-.animate-orb-alt {
-  animation: orb-float-alt 11s ease-in-out infinite;
-}
-
-/* Vignette edge mask */
-.vignette-overlay {
-  background: radial-gradient(circle at center, transparent 40%, rgba(3, 3, 5, 0.7) 85%, #030305 100%);
-  pointer-events: none;
-}
-</file>
-
 <file path="src/main.tsx">
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
@@ -1983,46 +1414,6 @@ coverage/
   "description": "Viral dark minimalist slide-deck presentation portfolio for Mohamed Imtiaz, Digital Marketer & Designer in Syahri Mustofa style.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
-</file>
-
-<file path="package.json">
-{
-  "name": "react-example",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build",
-    "preview": "vite preview",
-    "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@google/genai": "^2.4.0",
-    "@tailwindcss/vite": "^4.1.14",
-    "@vitejs/plugin-react": "^5.0.4",
-    "clsx": "^2.1.1",
-    "dotenv": "^17.2.3",
-    "express": "^4.21.2",
-    "lucide-react": "^0.546.0",
-    "motion": "^12.23.24",
-    "react": "^19.0.1",
-    "react-dom": "^19.0.1",
-    "tailwind-merge": "^3.6.0",
-    "vite": "^6.2.3"
-  },
-  "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/node": "^22.14.0",
-    "autoprefixer": "^10.4.21",
-    "esbuild": "^0.25.0",
-    "tailwindcss": "^4.1.14",
-    "tsx": "^4.21.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.3"
-  }
 }
 </file>
 
@@ -2632,29 +2023,6 @@ coverage/
 </html>
 </file>
 
-<file path="README.md">
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
-
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/2806e095-f77f-473a-8e49-f267b86ff5bb
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
-</file>
-
 <file path="tsconfig.json">
 {
   "compilerOptions": {
@@ -2707,6 +2075,1754 @@ export default defineConfig(() => {
     },
   };
 });
+</file>
+
+<file path="src/components/ImageModal.tsx">
+import React from 'react';
+import { X, ExternalLink } from 'lucide-react';
+
+interface ImageModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  image: string;
+  title: string;
+  category?: string;
+  client?: string;
+  description?: string;
+}
+
+export const ImageModal: React.FC<ImageModalProps> = ({
+  isOpen,
+  onClose,
+  image,
+  title,
+  category,
+  client,
+  description,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      id="portfolio-image-modal"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 bg-black/90 backdrop-blur-xl transition-all duration-300 animate-in fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="relative max-w-4xl w-[92vw] md:w-full max-h-[85vh] md:max-h-none bg-zinc-950/90 border border-white/10 rounded-2xl overflow-y-auto md:overflow-visible shadow-2xl flex flex-col md:flex-row items-stretch"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <button
+          id="btn-close-modal"
+          onClick={onClose}
+          aria-label="Close modal"
+          className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/70 border border-white/20 text-zinc-300 hover:text-white hover:bg-black flex items-center justify-center transition-all cursor-pointer shadow-lg"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        {/* Media Frame */}
+        <div className="w-full md:w-3/5 bg-black/70 flex items-center justify-center p-3 sm:p-4 border-b md:border-b-0 md:border-r border-white/10 shrink-0">
+          <img
+            src={image}
+            alt={title}
+            className="max-h-[40vh] sm:max-h-[50vh] md:max-h-[70vh] w-auto object-contain rounded-lg shadow-xl"
+          />
+        </div>
+
+        {/* Metadata Details */}
+        <div className="md:w-2/5 p-6 sm:p-8 flex flex-col justify-between bg-zinc-950/95">
+          <div>
+            {category && (
+              <span className="text-[11px] font-mono tracking-widest text-blue-400 uppercase block mb-2">
+                {category}
+              </span>
+            )}
+            <h3 className="font-syne font-bold text-2xl text-white tracking-tight mb-2">
+              {title}
+            </h3>
+            {client && (
+              <p className="text-xs font-mono text-zinc-400 uppercase tracking-wider mb-4">
+                Client: <span className="text-zinc-200">{client}</span>
+              </p>
+            )}
+            {description && (
+              <p className="text-sm text-zinc-300 leading-relaxed font-sans mt-3">
+                {description}
+              </p>
+            )}
+          </div>
+
+          <div className="pt-6 border-t border-white/10 mt-6 flex items-center justify-between">
+            <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+              Mohamed Imtiaz Portfolio
+            </span>
+            <button
+              onClick={onClose}
+              className="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-mono text-white transition-colors cursor-pointer"
+            >
+              Close [ESC]
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+</file>
+
+<file path="src/components/SlideNav.tsx">
+import React from 'react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
+
+interface SlideNavProps {
+  currentSlide: number;
+  totalSlides: number;
+  onSelectSlide: (index: number) => void;
+  onPrev: () => void;
+  onNext: () => void;
+}
+
+export const SlideNav: React.FC<SlideNavProps> = ({
+  currentSlide,
+  totalSlides,
+  onSelectSlide,
+  onPrev,
+  onNext,
+}) => {
+  return (
+    <div
+      id="slide-deck-controller"
+      className="hidden md:flex fixed right-5 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-3 select-none pointer-events-auto"
+    >
+      {/* Up Button */}
+      <button
+        id="btn-slide-prev"
+        onClick={onPrev}
+        disabled={currentSlide === 0}
+        aria-label="Previous slide"
+        className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-zinc-500 transition-all cursor-pointer"
+      >
+        <ChevronUp className="w-4 h-4" />
+      </button>
+
+      {/* Slide Dots Indicator */}
+      <div className="flex flex-col gap-2 py-2">
+        {Array.from({ length: totalSlides }).map((_, idx) => {
+          const isActive = currentSlide === idx;
+          return (
+            <button
+              key={idx}
+              id={`slide-dot-${idx}`}
+              onClick={() => onSelectSlide(idx)}
+              aria-label={`Jump to slide ${idx + 1}`}
+              className="group relative flex items-center justify-center p-1 cursor-pointer focus:outline-none"
+            >
+              <span
+                className={`block rounded-full transition-all duration-300 ${
+                  isActive
+                    ? 'w-2 h-6 bg-white shadow-[0_0_12px_rgba(37,99,235,0.9)]'
+                    : 'w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-300 group-hover:scale-125'
+                }`}
+              />
+              {/* Tooltip on hover */}
+              <span className="absolute right-7 px-2 py-0.5 text-[10px] tracking-widest font-mono text-zinc-400 bg-zinc-900/90 border border-white/10 rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">
+                0{idx + 1}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Down Button */}
+      <button
+        id="btn-slide-next"
+        onClick={onNext}
+        disabled={currentSlide === totalSlides - 1}
+        aria-label="Next slide"
+        className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-zinc-500 transition-all cursor-pointer"
+      >
+        <ChevronDown className="w-4 h-4" />
+      </button>
+
+      {/* Minimal Numeric Slide Counter */}
+      <div className="mt-1 text-[10px] font-mono tracking-widest text-zinc-500">
+        0{currentSlide + 1}
+      </div>
+    </div>
+  );
+};
+</file>
+
+<file path="package.json">
+{
+  "name": "react-example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview",
+    "clean": "rm -rf dist server.js",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "@tailwindcss/vite": "^4.1.14",
+    "@vitejs/plugin-react": "^5.0.4",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "framer-motion": "^13.2.0",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "tailwind-merge": "^3.6.0",
+    "vite": "^6.2.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.0",
+    "autoprefixer": "^10.4.21",
+    "esbuild": "^0.25.0",
+    "tailwindcss": "^4.1.14",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.3"
+  }
+}
+</file>
+
+<file path="README.md">
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+</div>
+
+# Mohamed Imtiaz Portfolio Application
+
+This project is a high-performance, interactive portfolio web application for Mohamed Imtiaz (Digital Marketer, Graphic Designer & Social Media Manager).
+
+## Run Locally
+
+**Prerequisites:** Node.js
+
+1. Install dependencies:
+   `npm install`
+2. Run dev server:
+   `npm run dev`
+
+---
+
+## Typography
+
+### Card Internal Typography System
+Establish a rigid typography hierarchy inside all cards (Experience, Expertise, and Clients):
+
+- **Card Title / Company Name**: Semi-bold or Medium weight, clean sizing (e.g., `text-sm` or `text-base`), using high-contrast foreground color (`text-foreground` / `text-white`).
+- **Card Subtitle / Date / Role**: Muted smaller font (`text-xs` or `text-sm`), using secondary text color (`text-muted-foreground` / `text-zinc-400`).
+- **Card Body Description**: Clean, readable paragraph styling with tight line-height (`leading-relaxed`), constrained font size (`text-xs`), and strict padding inside the cards (minimum `p-4` or `p-5`) to prevent text from touching card borders or getting clipped.
+</file>
+
+<file path="src/components/slides/Slide1Intro.tsx">
+import React from 'react';
+import { motion } from 'motion/react';
+import { PROFILE_DATA } from '../../data/portfolioData';
+
+interface Slide1IntroProps {
+  onExplore: () => void;
+  activeSlide?: number;
+}
+
+export const Slide1Intro: React.FC<Slide1IntroProps> = ({ onExplore }) => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  return (
+    <section
+      id="slide-1-cover"
+      className="slide-section w-screen h-[100dvh] min-h-[100dvh] relative flex flex-col items-center justify-between py-12 md:py-0 px-6 overflow-hidden bg-transparent"
+    >
+      {/* Top Spacer for Mobile Centering */}
+      <div className="w-full h-4 md:hidden pointer-events-none" />
+
+      {/* Main Hero Center Title */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 0.6, delay: isMobile ? 1 : 0.5 }}
+        className="relative z-10 text-center select-none flex flex-col items-center justify-center my-auto"
+      >
+        <h1
+          id="hero-title"
+          className="font-sans font-black text-3xl sm:text-5xl md:text-8xl lg:text-9xl tracking-tight text-white leading-none flex items-center justify-center"
+          style={{ letterSpacing: '-0.03em' }}
+        >
+          PORTFOLIO
+          <span
+            className="inline-block w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full bg-white ml-2 sm:ml-3 md:ml-4 -mt-4 sm:-mt-8 md:-mt-10 lg:-mt-12"
+            aria-hidden="true"
+          />
+        </h1>
+        <p className="font-mono text-xs sm:text-sm md:text-base text-blue-400 tracking-[0.2em] sm:tracking-[0.3em] uppercase font-semibold mt-4">
+          {PROFILE_DATA.tagline}
+        </p>
+      </motion.div>
+
+      {/* Bottom Container: Name + Role on Left, Scroll on Right */}
+      <div className="w-full max-w-6xl mx-auto flex items-end justify-between z-20 select-none pb-2 md:pb-8 md:px-6">
+        <div className="text-left">
+          <p className="text-xs sm:text-sm font-sans font-semibold text-white/90">
+            {PROFILE_DATA.name}
+          </p>
+          <p className="text-[10px] sm:text-[11px] font-mono text-zinc-400 mt-0.5">
+            {PROFILE_DATA.role} • {PROFILE_DATA.location}
+          </p>
+        </div>
+
+        <button
+          onClick={onExplore}
+          id="btn-scroll-indicator"
+          className="flex items-center gap-2 group cursor-pointer text-zinc-500 hover:text-white transition-colors select-none"
+          aria-label="Scroll to next slide"
+        >
+          <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase text-zinc-600 group-hover:text-zinc-400 transition-colors">
+            Scroll
+          </span>
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-500 group-hover:bg-cyan-400 group-hover:scale-125 transition-all" />
+        </button>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/App.tsx">
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { AuraBackground } from './components/AuraBackground';
+import { SlideNav } from './components/SlideNav';
+import { ImageModal } from './components/ImageModal';
+import { Slide1Intro } from './components/slides/Slide1Intro';
+import { Slide2About } from './components/slides/Slide2About';
+import { Slide3Experience } from './components/slides/Slide3Experience';
+import { Slide4Services } from './components/slides/Slide4Services';
+import { Slide5Projects } from './components/slides/Slide5Projects';
+import { Slide6Brands } from './components/slides/Slide6Brands';
+import { Slide7WhyMe } from './components/slides/Slide7WhyMe';
+import { Slide8Contact } from './components/slides/Slide8Contact';
+import { ProjectItem } from './data/portfolioData';
+
+export default function App() {
+  const [activeSlide, setActiveSlide] = useState<number>(0);
+  const totalSlides = 8;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Modal Lightbox state
+  const [modalData, setModalData] = useState<{
+    isOpen: boolean;
+    image: string;
+    title: string;
+    category?: string;
+    client?: string;
+    description?: string;
+  }>({
+    isOpen: false,
+    image: '',
+    title: '',
+  });
+
+  // Smooth slide jump handler with JS snap disable to eliminate scroll stutter
+  const scrollToSlide = useCallback((index: number) => {
+    if (!containerRef.current) return;
+    const clampedIndex = Math.max(0, Math.min(index, totalSlides - 1));
+    const targetY = clampedIndex * window.innerHeight;
+
+    containerRef.current.style.scrollSnapType = 'none';
+    containerRef.current.scrollTo({
+      top: targetY,
+      behavior: 'smooth',
+    });
+    setActiveSlide(clampedIndex);
+
+    setTimeout(() => {
+      if (containerRef.current) {
+        containerRef.current.style.scrollSnapType = 'y mandatory';
+      }
+    }, 600);
+  }, [totalSlides]);
+
+  const handleNextSlide = () => scrollToSlide(activeSlide + 1);
+  const handlePrevSlide = () => scrollToSlide(activeSlide - 1);
+
+  // Monitor scroll position
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollTop = container.scrollTop;
+          const slideHeight = window.innerHeight;
+          const current = Math.round(scrollTop / slideHeight);
+          setActiveSlide(Math.max(0, Math.min(current, totalSlides - 1)));
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [totalSlides]);
+
+  // Keyboard Navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (modalData.isOpen) {
+        if (e.key === 'Escape') {
+          setModalData((prev) => ({ ...prev, isOpen: false }));
+        }
+        return;
+      }
+
+      switch (e.key) {
+        case 'ArrowDown':
+        case 'PageDown':
+        case ' ':
+          e.preventDefault();
+          handleNextSlide();
+          break;
+        case 'ArrowUp':
+        case 'PageUp':
+          e.preventDefault();
+          handlePrevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          scrollToSlide(0);
+          break;
+        case 'End':
+          e.preventDefault();
+          scrollToSlide(totalSlides - 1);
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeSlide, modalData.isOpen, scrollToSlide]);
+
+  // Project item preview
+  const handleSelectProject = (project: ProjectItem) => {
+    setModalData({
+      isOpen: true,
+      image: project.image,
+      title: project.title,
+      category: project.category,
+      client: project.client,
+      description: project.description,
+    });
+  };
+
+  return (
+    <main
+      id="presentation-viewport"
+      className="w-screen h-screen bg-[#030305] text-white overflow-hidden relative select-none font-sans"
+    >
+      {/* Dynamic Animated Glowing Blue Aura Background */}
+      <AuraBackground activeSlide={activeSlide} />
+
+      {/* Fullscreen Snap Container */}
+      <div
+        ref={containerRef}
+        id="fullscreen-slides-viewport"
+        className="slides-container min-h-[100dvh] h-full w-screen overflow-y-scroll overflow-x-hidden no-scrollbar relative z-10"
+      >
+        {/* SLIDE 1: INTRO COVER */}
+        <Slide1Intro onExplore={handleNextSlide} activeSlide={activeSlide} />
+
+        {/* SLIDE 2: ABOUT & VALUE PROPOSITION */}
+        <Slide2About activeSlide={activeSlide} />
+
+        {/* SLIDE 3: CREDENTIALS & EXPERIENCE */}
+        <Slide3Experience activeSlide={activeSlide} isActive={activeSlide === 2} />
+
+        {/* SLIDE 4: SERVICES & CAPABILITIES */}
+        <Slide4Services activeSlide={activeSlide} />
+
+        {/* SLIDE 5: CAMPAIGN WORK SHOWCASE */}
+        <Slide5Projects onSelectProject={handleSelectProject} activeSlide={activeSlide} />
+
+        {/* SLIDE 6: VERIFIED BRANDS & RETAINERS */}
+        <Slide6Brands activeSlide={activeSlide} />
+
+        {/* SLIDE 7: THE ADVANTAGE */}
+        <Slide7WhyMe activeSlide={activeSlide} />
+
+        {/* SLIDE 8: FINAL CONTACT & INQUIRIES */}
+        <Slide8Contact onRestart={() => scrollToSlide(0)} activeSlide={activeSlide} />
+      </div>
+
+      {/* Slide Deck Side Controller */}
+      <SlideNav
+        currentSlide={activeSlide}
+        totalSlides={totalSlides}
+        onSelectSlide={scrollToSlide}
+        onPrev={handlePrevSlide}
+        onNext={handleNextSlide}
+      />
+
+      {/* Image Detail Lightbox Modal */}
+      <ImageModal
+        isOpen={modalData.isOpen}
+        onClose={() => setModalData((prev) => ({ ...prev, isOpen: false }))}
+        image={modalData.image}
+        title={modalData.title}
+        category={modalData.category}
+        client={modalData.client}
+        description={modalData.description}
+      />
+    </main>
+  );
+}
+</file>
+
+<file path="src/index.css">
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-syne: 'Syne', sans-serif;
+    --font-inter: 'Inter', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-inter);
+    background-color: #030305;
+    color: #ffffff;
+  }
+}
+
+.font-syne {
+  font-family: 'Syne', sans-serif;
+}
+
+.font-syncopate {
+  font-family: 'Syncopate', sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.font-unbounded {
+  font-family: 'Unbounded', sans-serif;
+}
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-jakarta {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Hide default scrollbars for pure slide-deck presentation look */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Mobile vs Desktop CSS Scroll Snap Container Isolation */
+@media (max-width: 767px) {
+  html, body, #root, #presentation-viewport {
+    overflow-y: auto !important;
+    height: auto !important;
+  }
+  .slides-container {
+    scroll-snap-type: none !important;
+    overflow-y: visible !important;
+    height: auto !important;
+  }
+  /* Slide 1 stays full screen, remaining slides have natural height with clean spacing */
+  .slide-section {
+    scroll-snap-align: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+  }
+  #slide-1-cover {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+}
+@media (min-width: 768px) {
+  .slides-container {
+    scroll-snap-type: y mandatory;
+    height: 100vh;
+    overflow-y: scroll;
+  }
+  .slide-section {
+    scroll-snap-align: start;
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+/* Subtle glow orb pulse keyframes */
+@keyframes orb-pulse {
+  0%,
+  100% {
+    transform: scale(1) translate(0px, 0px);
+    opacity: 0.85;
+  }
+
+  50% {
+    transform: scale(1.08) translate(15px, -10px);
+    opacity: 1;
+  }
+}
+
+@keyframes orb-float-alt {
+  0%,
+  100% {
+    transform: scale(1.05) translate(-10px, 10px) rotate(0deg);
+    opacity: 0.75;
+  }
+
+  50% {
+    transform: scale(0.95) translate(20px, -15px) rotate(15deg);
+    opacity: 0.95;
+  }
+}
+
+.animate-orb {
+  animation: orb-pulse 8s ease-in-out infinite;
+}
+
+.animate-orb-alt {
+  animation: orb-float-alt 11s ease-in-out infinite;
+}
+
+/* Vignette edge mask */
+.vignette-overlay {
+  background: radial-gradient(circle at center, transparent 40%, rgba(3, 3, 5, 0.7) 85%, #030305 100%);
+  pointer-events: none;
+}
+
+/* Infinite Marquee Scroll Animation */
+@keyframes marquee-scroll {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 24s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+</file>
+
+<file path="src/components/slides/Slide4Services.tsx">
+import React from 'react';
+import { motion } from 'motion/react';
+import { PROFILE_DATA } from '../../data/portfolioData';
+import { TiltCard } from '../ui/be-ui-tilt-card';
+import { Target, Share2, Palette, Video, Tag } from 'lucide-react';
+
+interface Slide4ServicesProps {
+  activeSlide?: number;
+}
+
+export const Slide4Services: React.FC<Slide4ServicesProps> = () => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  const serviceIcons = [
+    <Target className="w-5 h-5 text-blue-400" />,
+    <Share2 className="w-5 h-5 text-cyan-400" />,
+    <Palette className="w-5 h-5 text-purple-400" />,
+    <Video className="w-5 h-5 text-emerald-400" />,
+  ];
+
+  return (
+    <section
+      id="slide-4-services"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-0 md:px-10 lg:px-16 bg-[#030305]"
+    >
+      {/* Main Layout Container */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 0.6, delay: isMobile ? 1 : 0.5 }}
+        className="w-full max-w-5xl mx-auto flex flex-col justify-center z-10 my-auto py-4 select-none"
+      >
+        {/* Section Header */}
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="font-syne font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-tight uppercase leading-tight md:leading-none">
+            WHAT I DO
+          </h2>
+          <p className="font-jakarta font-normal text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto mt-2 leading-relaxed">
+            Core digital marketing & design pillars engineered to accelerate brand visibility and drive revenue.
+          </p>
+        </div>
+
+        {/* 4 Core Pillars Grid (2x2 Grid) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-5 w-full">
+          {PROFILE_DATA.services.map((service, idx) => (
+            <motion.div
+              key={service.number}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ duration: 0.7, delay: 0.5 + (idx * 0.15) }}
+            >
+              <TiltCard
+                max={8}
+                glare={true}
+                className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-md">
+                      {serviceIcons[idx]}
+                    </div>
+                    <span className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-[11px] group-hover:text-blue-400 transition-colors">
+                      {service.number}
+                    </span>
+                  </div>
+
+                  <h3 className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug group-hover:text-blue-300 transition-colors">
+                    {service.title}
+                  </h3>
+
+                  <p className="font-jakarta font-normal text-xs text-zinc-400 leading-relaxed mt-1.5 mb-4">
+                    {service.description}
+                  </p>
+                </div>
+
+                {/* Service Feature Tags */}
+                <div className="pt-3 border-t border-white/5 flex flex-wrap gap-1.5">
+                  {service.tags.map((tag, tIdx) => (
+                    <span
+                      key={tIdx}
+                      className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-zinc-300 text-[10px] font-mono flex items-center gap-1"
+                    >
+                      <Tag className="w-2.5 h-2.5 text-blue-400" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </TiltCard>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/slides/Slide5Projects.tsx">
+import React from 'react';
+import { motion } from 'motion/react';
+import { CAMPAIGN_PROJECTS, ProjectItem } from '../../data/portfolioData';
+import { Eye, Sparkles } from 'lucide-react';
+
+interface Slide5ProjectsProps {
+  onSelectProject: (project: ProjectItem) => void;
+  activeSlide?: number;
+}
+
+export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
+  onSelectProject,
+}) => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  return (
+    <section
+      id="slide-5-projects"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-0 md:px-10 lg:px-16 bg-[#030305]"
+    >
+      {/* Container holding header + grid fitted to viewport height */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 0.6, delay: isMobile ? 1 : 0.5 }}
+        className="w-full max-w-6xl mx-auto flex flex-col justify-center h-full max-h-[90vh] py-6 z-10 select-none"
+      >
+        {/* Header */}
+        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-900/80 to-zinc-900 border border-blue-500/40 flex items-center justify-center text-white font-syne font-black text-sm sm:text-base tracking-wider shadow-lg shrink-0">
+              MS
+            </div>
+            <div>
+              <h2 className="font-syne font-extrabold text-2xl sm:text-3xl md:text-2xl lg:text-3xl text-white tracking-tight uppercase leading-tight md:leading-none">
+                MS MAX & CLIENT CAMPAIGNS
+              </h2>
+              <p className="font-jakarta font-normal text-xs sm:text-[13px] text-zinc-400 max-w-2xl leading-snug mt-1 font-normal">
+                Creative Design, Ad Creatives & Social Content
+              </p>
+            </div>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-[11px]">
+            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+            <span>Verified Commercial Work</span>
+          </div>
+        </div>
+
+        {/* 7 Project Cards Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 w-full items-stretch">
+          {CAMPAIGN_PROJECTS.map((project, idx) => {
+            const isWhiteBgLogo =
+              project.image.includes('Insta_Saver_@gadjetsoman') ||
+              project.image.includes('Insta_Saver_@smoko_eats') ||
+              project.image.includes('IMG_2126') ||
+              project.image.includes('IMG_2127') ||
+              project.image.includes('649148396');
+
+            return (
+              <motion.div
+                key={project.id}
+                id={`project-item-${idx}`}
+                onClick={() => onSelectProject(project)}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{ duration: 0.7, delay: 0.5 + (idx * 0.15) }}
+                className="group relative rounded-2xl border border-white/[0.08] hover:border-white/20 bg-white/[0.03] hover:bg-zinc-900/80 overflow-hidden backdrop-blur-md shadow-2xl hover:-translate-y-1.5 transition-all duration-300 aspect-[4/3] sm:aspect-square md:h-44 cursor-pointer p-2.5 sm:p-3 flex flex-col justify-between"
+              >
+                {isWhiteBgLogo ? (
+                  /* Inner White Container - Seamless logo fit */
+                  <div className="w-full h-full bg-white rounded-xl p-3 flex items-center justify-center shadow-inner overflow-hidden">
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                ) : (
+                  /* Full Cover Image */
+                  <div className="w-full h-full rounded-xl overflow-hidden relative">
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                )}
+
+                {/* Hover Glass Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 z-20 pointer-events-none rounded-2xl">
+                  <span className="font-jakarta text-[11px] text-zinc-400 group-hover:text-zinc-200 block">
+                    {project.client}
+                  </span>
+                  <p className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug mt-1 line-clamp-2">
+                    {project.title}
+                  </p>
+                  <div className="mt-1 flex items-center gap-1.5 text-[11px] font-mono text-zinc-400 group-hover:text-white">
+                    <Eye className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Click to View</span>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/slides/Slide6Brands.tsx">
+import React from 'react';
+import { motion } from 'motion/react';
+import { CLIENT_BRANDS } from '../../data/portfolioData';
+import { TiltCard } from '../ui/be-ui-tilt-card';
+import { Tag, MapPin, Building2 } from 'lucide-react';
+
+interface Slide6BrandsProps {
+  activeSlide?: number;
+}
+
+export const Slide6Brands: React.FC<Slide6BrandsProps> = () => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  return (
+    <section
+      id="slide-6-brands"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-0 md:px-10 lg:px-16 bg-[#030305]"
+    >
+      {/* Main Container */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 0.7, delay: isMobile ? 1 : 0.5 }}
+        className="w-full max-w-4xl mx-auto flex flex-col justify-center z-10 my-auto py-4 select-none"
+      >
+        {/* Section Header */}
+        <div className="text-center mb-4 sm:mb-5">
+          <h2 className="font-syne font-extrabold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-white tracking-tight uppercase leading-tight md:leading-none">
+            CLIENT BRANDS & COLLABORATIONS
+          </h2>
+          <p className="font-jakarta font-normal text-xs text-zinc-400 max-w-xl mx-auto mt-1.5 leading-snug">
+            Long-term marketing retainer accounts, creative direction & digital ad campaigns across Oman & GCC.
+          </p>
+        </div>
+
+        {/* 4 Compact Retainer Client Cards (2x2 Grid) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full">
+          {CLIENT_BRANDS.map((brand, idx) => (
+            <motion.div
+              key={brand.id}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ duration: 0.7, delay: 0.5 + (idx * 0.15) }}
+            >
+              <TiltCard
+                max={8}
+                glare={true}
+                className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/25 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
+              >
+                <div>
+                  {/* Top Row: Avatar & Location Badge */}
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-900/80 to-zinc-900 border border-blue-500/40 flex items-center justify-center text-xs font-syne font-black text-blue-300 group-hover:text-white shrink-0 shadow-md transition-colors">
+                        {brand.initials}
+                      </span>
+                      <div>
+                        <h3 className="font-jakarta font-bold text-sm text-white group-hover:text-blue-300 transition-colors leading-snug">
+                          {brand.name}
+                        </h3>
+                        {brand.handle && (
+                          <span className="font-mono text-[10px] tracking-[0.25em] text-zinc-400 block leading-tight">
+                            {brand.handle}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-zinc-400 text-[9px] font-mono flex items-center gap-1 shrink-0">
+                      <MapPin className="w-2.5 h-2.5 text-blue-400" />
+                      {brand.location}
+                    </span>
+                  </div>
+
+                  {/* Subtitle & Industry */}
+                  <p className="font-jakarta font-normal text-[11px] sm:text-xs text-zinc-300 leading-snug mt-1.5 mb-1.5">
+                    {brand.subtitle}
+                  </p>
+
+                  <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-400 mb-2">
+                    <Building2 className="w-3 h-3 text-zinc-500" />
+                    <span>{brand.industry}</span>
+                  </div>
+                </div>
+
+                {/* Service Tags Pill Strip */}
+                <div className="pt-2 border-t border-white/5 flex flex-wrap gap-1">
+                  {brand.services.map((service, sIdx) => (
+                    <span
+                      key={sIdx}
+                      className="px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-300 text-[9px] font-mono flex items-center gap-1"
+                    >
+                      <Tag className="w-2 h-2 text-blue-400" />
+                      {service}
+                    </span>
+                  ))}
+                </div>
+              </TiltCard>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/slides/Slide7WhyMe.tsx">
+import React from 'react';
+import { motion } from 'motion/react';
+import { TiltCard } from '../ui/be-ui-tilt-card';
+import { TrendingUp, Compass, Layers, CheckCircle2 } from 'lucide-react';
+
+interface Slide7WhyMeProps {
+  activeSlide?: number;
+}
+
+export const Slide7WhyMe: React.FC<Slide7WhyMeProps> = () => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  const pillars = [
+    {
+      icon: <TrendingUp className="w-5 h-5 text-blue-400" />,
+      title: "Performance & ROI Focus",
+      description:
+        "Every ad creative, reel, and graphic is engineered with audience psychology and clear call-to-actions to maximize campaign conversion.",
+      highlights: ["Data-informed ad creative design", "Meta & Google performance setup", "Conversion-first visual hierarchy"],
+    },
+    {
+      icon: <Compass className="w-5 h-5 text-cyan-400" />,
+      title: "GCC & Oman Regional Depth",
+      description:
+        "Based in Muscat, Oman with direct experience navigating local market dynamics, GCC consumer preferences, and regional commercial trends.",
+      highlights: ["Oman & GCC audience alignment", "Regional brand positioning", "Localized promo content"],
+    },
+    {
+      icon: <Layers className="w-5 h-5 text-emerald-400" />,
+      title: "Full-Stack Creative Execution",
+      description:
+        "Eliminating agency handoff friction by handling end-to-end campaign asset creation—from graphic design and promo reels to ad management.",
+      highlights: ["Design, video & copy integration", "Single point of accountability", "Rapid turnarounds"],
+    },
+  ];
+
+  return (
+    <section
+      id="slide-7-whyme"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-0 md:px-10 lg:px-16 bg-[#030305]"
+    >
+      {/* Main Container */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 0.6, delay: isMobile ? 1 : 0.5 }}
+        className="w-full max-w-5xl mx-auto flex flex-col justify-center z-10 my-auto py-4 select-none"
+      >
+        {/* Section Header */}
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="font-syne font-extrabold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-white tracking-tight uppercase leading-tight md:leading-none max-w-3xl mx-auto">
+            CREATIVITY + STRATEGY = MEASURABLE GROWTH
+          </h2>
+          <p className="font-jakarta font-normal text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto mt-2 leading-relaxed">
+            The strategic formula behind high-impact social media, performance ad campaigns, and commercial retainers.
+          </p>
+        </div>
+
+        {/* 3 Advantage Pillar Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-5 w-full">
+          {pillars.map((pillar, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ duration: 0.7, delay: 0.5 + (idx * 0.15) }}
+            >
+              <TiltCard
+                max={8}
+                glare={true}
+                className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3 shadow-md group-hover:scale-105 transition-transform">
+                    {pillar.icon}
+                  </div>
+
+                  <h3 className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug group-hover:text-blue-300 transition-colors">
+                    {pillar.title}
+                  </h3>
+
+                  <p className="font-jakarta font-normal text-xs text-zinc-400 leading-relaxed mt-1.5 mb-4">
+                    {pillar.description}
+                  </p>
+                </div>
+
+                <ul className="space-y-1.5 pt-3 border-t border-white/5">
+                  {pillar.highlights.map((item, hIdx) => (
+                    <li key={hIdx} className="font-jakarta text-[11px] text-zinc-400 flex items-center gap-1.5 font-normal">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </TiltCard>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/slides/Slide2About.tsx">
+import React from 'react';
+import { motion } from 'motion/react';
+import { PROFILE_DATA } from '../../data/portfolioData';
+import GradientBlobCard from '../ui/gradient-bold-card';
+import { Target, Compass, TrendingUp, Sparkles } from 'lucide-react';
+
+interface Slide2AboutProps {
+  activeSlide?: number;
+}
+
+export const Slide2About: React.FC<Slide2AboutProps> = () => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  const bentoCards = [
+    {
+      icon: <Target className="w-4 h-4 text-blue-400" />,
+      title: "Strategy & Marketing",
+      description: "Aligning creative design with market positioning & audience target strategy.",
+      gradient: "from-pink-500 via-red-500 to-yellow-500",
+    },
+    {
+      icon: <Compass className="w-4 h-4 text-cyan-400" />,
+      title: "GCC & Oman Depth",
+      description: "Deep understanding of regional Middle Eastern consumer behavior & trends.",
+      gradient: "from-cyan-500 via-blue-500 to-purple-600",
+    },
+    {
+      icon: <TrendingUp className="w-4 h-4 text-emerald-400" />,
+      title: "Performance & ROI",
+      description: "Data-driven Meta & Google ad campaigns engineered for measurable business growth.",
+      gradient: "from-emerald-500 via-teal-400 to-cyan-500",
+    },
+    {
+      icon: <Sparkles className="w-4 h-4 text-purple-400" />,
+      title: "Creative & Visuals",
+      description: "High-converting ad graphics, promo video reels & brand identity systems.",
+      gradient: "from-purple-500 via-pink-500 to-rose-500",
+    },
+  ];
+
+  return (
+    <section
+      id="slide-2-about"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-center overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-0 md:px-10 lg:px-16 bg-[#030305]"
+    >
+      {/* Main Layout Split Grid */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 0.6, delay: isMobile ? 1 : 0.5 }}
+        className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-14 z-10 my-auto pt-6 pb-2 select-none"
+      >
+        {/* LEFT COLUMN: CUTOUT PORTRAIT OVER BLUE SPOTLIGHT */}
+        <div className="flex flex-col items-center lg:items-start shrink-0">
+          <div className="mb-4 text-center lg:text-left">
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-[11px] block mb-1">
+              Hello, I am
+            </span>
+            <h2 className="font-syne font-extrabold text-2xl sm:text-3xl lg:text-5xl text-white tracking-tight leading-tight md:leading-none">
+              {PROFILE_DATA.name}
+            </h2>
+            <p className="font-jakarta text-[11px] sm:text-xs text-zinc-400 mt-1.5 font-medium max-w-xs">
+              {PROFILE_DATA.role}
+            </p>
+          </div>
+
+          {/* Seamless Cutout Portrait floating over blue studio spotlight */}
+          <div className="relative w-56 h-72 sm:w-64 sm:h-[340px] flex items-end justify-center">
+            {/* Luminous Blue Radial Spotlight Orb */}
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-80 sm:h-80 rounded-full opacity-90 pointer-events-none"
+              style={{
+                background:
+                  'radial-gradient(circle at center, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.75) 45%, rgba(15, 23, 42, 0.15) 75%, transparent 88%)',
+                filter: 'blur(45px)',
+              }}
+            />
+
+            {/* Cutout Portrait Image with seamless bottom fade mask */}
+            <img
+              src={PROFILE_DATA.headshot}
+              alt="Mohamed Imtiaz Portrait"
+              id="profile-img"
+              className="relative z-10 w-full h-full object-cover object-top"
+              style={{
+                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%)',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: BIO & 2x2 BENTO GRID */}
+        <div className="flex-1 max-w-2xl text-left w-full">
+          {/* Bio Headline & Copy */}
+          <div className="mb-5 sm:mb-6">
+            <h3 className="font-syne font-extrabold text-2xl sm:text-3xl text-white tracking-tight leading-tight mb-2 flex items-center gap-2">
+              <span>About Me</span>
+              <span className="w-2 h-2 rounded-full bg-blue-500" />
+            </h3>
+            <p className="font-jakarta font-normal text-xs sm:text-[13px] text-zinc-300 leading-relaxed font-normal">
+              {PROFILE_DATA.about}
+            </p>
+          </div>
+
+          {/* 2x2 BENTO GRID VALUE PROPOSITION */}
+          <div>
+            <h4 className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 mb-3 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-blue-400" />
+              <span>Core Expertise & Focus</span>
+            </h4>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+              {bentoCards.map((card, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.1 }}
+                  transition={{ duration: 0.7, delay: 0.5 + (idx * 0.15) }}
+                  className="h-full"
+                >
+                  <GradientBlobCard blobGradient={card.gradient}>
+                    <div>
+                      <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-md">
+                        {card.icon}
+                      </div>
+                      <h5 className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug group-hover:text-blue-300 transition-colors">
+                        {card.title}
+                      </h5>
+                      <p className="font-jakarta font-normal text-xs text-zinc-300 leading-relaxed mt-1.5">
+                        {card.description}
+                      </p>
+                    </div>
+                  </GradientBlobCard>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/slides/Slide3Experience.tsx">
+import React, { useEffect, useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, useScroll } from 'motion/react';
+
+interface Slide3ExperienceProps {
+  activeSlide?: number;
+  isActive?: boolean;
+}
+
+export const Slide3Experience: React.FC<Slide3ExperienceProps> = ({ activeSlide, isActive }) => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const mobileContainerRef = useRef<HTMLDivElement>(null);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  const isCurrentlyActive = isActive !== undefined ? isActive : activeSlide === 2;
+
+  // Desktop Motion Values & Transforms
+  const rawProgress = useMotionValue(0);
+  const smoothProgress = useSpring(rawProgress, { stiffness: 80, damping: 25, mass: 0.5 });
+  const lineHeight = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
+
+  // Mobile Motion Values & Transforms (Unified scroll measurement)
+  const mobileRawProgress = useMotionValue(0);
+  const mobileLineHeight = useTransform(mobileRawProgress, [0, 1], ['0%', '100%']);
+
+  const handleMobileScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    const maxScroll = target.scrollHeight - target.clientHeight;
+    if (maxScroll > 0) {
+      const progress = Math.max(0, Math.min(1, target.scrollTop / maxScroll));
+      mobileRawProgress.set(progress);
+    }
+  };
+
+  const marqueeItems = [
+    { name: "Photoshop", abbr: "Ps", color: "text-[#31a8ff]", bg: "bg-[#001e36]" },
+    { name: "Illustrator", abbr: "Ai", color: "text-[#ff9a00]", bg: "bg-[#331c00]" },
+    { name: "Premiere Pro", abbr: "Pr", color: "text-[#ea77ff]", bg: "bg-[#2b0036]" },
+    { name: "After Effects", abbr: "Ae", color: "text-[#9999ff]", bg: "bg-[#1b103b]" },
+    { name: "Canva", label: "Canva", color: "text-cyan-400", abbr: "Cv", bg: "bg-cyan-950/60" },
+    { name: "CapCut", label: "CapCut", color: "text-white", abbr: "Cc", bg: "bg-zinc-800" },
+    { name: "Meta Business Suite", label: "Meta Ads", color: "text-blue-400", abbr: "Ma", bg: "bg-blue-950/60" },
+    { name: "Google Ads", label: "Google Ads", color: "text-amber-400", abbr: "Ga", bg: "bg-amber-950/60" },
+    { name: "TikTok Marketing", label: "TikTok", color: "text-pink-400", abbr: "Tt", bg: "bg-pink-950/60" },
+    { name: "HubSpot", label: "HubSpot", color: "text-orange-400", abbr: "Hs", bg: "bg-orange-950/60" },
+    { name: "AI Content Tools", label: "AI Creative", color: "text-emerald-400", abbr: "Ai", bg: "bg-emerald-950/60" }
+  ];
+
+  const milestones = [
+    {
+      date: "Mid 2024 - Present",
+      title: "Digital Marketing & Accounts",
+      institution: "MS Max (Oman) + HubSpot Certified Marketer",
+      description: "Leading performance Meta ads, digital marketing strategies, corporate PR campaigns, and retainer account growth in Oman."
+    },
+    {
+      date: "2023 - 2024",
+      title: "Graphic Designer & Marketer",
+      institution: "Spark Digitech Solutions",
+      description: "Designed multi-channel ad graphics, agency client branding guidelines, promotional video reels, and social media feed strategies."
+    },
+    {
+      date: "2021 - 2022",
+      title: "Animation, Graphic Design & Video Editing",
+      institution: "FGI Media Solution (1-Yr Diploma Program)",
+      description: "1-year intensive professional diploma program in visual design, video editing, motion graphics & digital media assets."
+    },
+    {
+      date: "2020 - 2021",
+      title: "Bachelor of Business Administration (BBA)",
+      institution: "E.G.S. Pillay Arts & Science College",
+      description: "Foundational degree in business management, marketing principles, administration, and corporate communications."
+    }
+  ];
+
+  // Native Window Wheel Listener for Desktop Wheel Scrubbing
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.innerWidth < 768) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (!isCurrentlyActive) return;
+
+      const current = rawProgress.get();
+      const delta = e.deltaY * 0.0008;
+      const next = Math.max(0, Math.min(1, current + delta));
+
+      if (e.deltaY > 0) {
+        if (current < 1) {
+          e.preventDefault();
+          e.stopPropagation();
+          rawProgress.set(next);
+        }
+      } else if (e.deltaY < 0) {
+        if (current > 0) {
+          e.preventDefault();
+          e.stopPropagation();
+          rawProgress.set(next);
+        }
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, [isCurrentlyActive, rawProgress]);
+
+  // Desktop Milestone Transforms
+  const opacity1 = useTransform(smoothProgress, [0.05, 0.18, 0.32, 0.40], [0, 1, 1, 0]);
+  const y1 = useTransform(smoothProgress, [0.05, 0.18, 0.35], [30, 0, -40]);
+  const nodeBg1 = useTransform(smoothProgress, [0, 0.15, 1], ['#27272a', '#ffffff', '#ffffff']);
+  const nodeShadow1 = useTransform(smoothProgress, [0, 0.15, 1], ['0 0 0px rgba(0,0,0,0)', '0 0 16px rgba(255,255,255,1)', '0 0 16px rgba(255,255,255,1)']);
+
+  const opacity2 = useTransform(smoothProgress, [0.32, 0.45, 0.58, 0.68], [0, 1, 1, 0]);
+  const y2 = useTransform(smoothProgress, [0.32, 0.45, 0.65], [30, 0, -40]);
+  const nodeBg2 = useTransform(smoothProgress, [0.32, 0.42, 1], ['#27272a', '#ffffff', '#ffffff']);
+  const nodeShadow2 = useTransform(smoothProgress, [0.32, 0.42, 1], ['0 0 0px rgba(0,0,0,0)', '0 0 16px rgba(255,255,255,1)', '0 0 16px rgba(255,255,255,1)']);
+
+  const opacity3 = useTransform(smoothProgress, [0.60, 0.72, 0.82, 0.90], [0, 1, 1, 0]);
+  const y3 = useTransform(smoothProgress, [0.60, 0.72, 0.88], [30, 0, -40]);
+  const nodeBg3 = useTransform(smoothProgress, [0.60, 0.70, 1], ['#27272a', '#ffffff', '#ffffff']);
+  const nodeShadow3 = useTransform(smoothProgress, [0.60, 0.70, 1], ['0 0 0px rgba(0,0,0,0)', '0 0 16px rgba(255,255,255,1)', '0 0 16px rgba(255,255,255,1)']);
+
+  const opacity4 = useTransform(smoothProgress, [0.85, 0.95, 1.0], [0, 1, 1]);
+  const y4 = useTransform(smoothProgress, [0.85, 0.95], [30, 0]);
+  const nodeBg4 = useTransform(smoothProgress, [0.85, 0.92, 1], ['#27272a', '#ffffff', '#ffffff']);
+  const nodeShadow4 = useTransform(smoothProgress, [0.85, 0.92, 1], ['0 0 0px rgba(0,0,0,0)', '0 0 16px rgba(255,255,255,1)', '0 0 16px rgba(255,255,255,1)']);
+
+  const desktopTransforms = [
+    { opacity: opacity1, y: y1, nodeBg: nodeBg1, nodeShadow: nodeShadow1, pos: 'top-[15%]', isLeft: true },
+    { opacity: opacity2, y: y2, nodeBg: nodeBg2, nodeShadow: nodeShadow2, pos: 'top-[42%]', isLeft: false },
+    { opacity: opacity3, y: y3, nodeBg: nodeBg3, nodeShadow: nodeShadow3, pos: 'top-[70%]', isLeft: true },
+    { opacity: opacity4, y: y4, nodeBg: nodeBg4, nodeShadow: nodeShadow4, pos: 'top-[92%]', isLeft: false }
+  ];
+
+  // Mobile Milestone Transforms (Linked strictly to mobileRawProgress thresholds)
+  const mobOpacity1 = useTransform(mobileRawProgress, [0.05, 0.12], [0, 1]);
+  const mobX1 = useTransform(mobileRawProgress, [0.05, 0.12], [20, 0]);
+  const mobNodeBg1 = useTransform(mobileRawProgress, [0, 0.10, 1], ['#27272a', '#ffffff', '#ffffff']);
+  const mobNodeShadow1 = useTransform(mobileRawProgress, [0, 0.10, 1], ['0 0 0px rgba(0,0,0,0)', '0 0 14px rgba(255,255,255,1)', '0 0 14px rgba(255,255,255,1)']);
+
+  const mobOpacity2 = useTransform(mobileRawProgress, [0.30, 0.40], [0, 1]);
+  const mobX2 = useTransform(mobileRawProgress, [0.30, 0.40], [20, 0]);
+  const mobNodeBg2 = useTransform(mobileRawProgress, [0, 0.38, 1], ['#27272a', '#ffffff', '#ffffff']);
+  const mobNodeShadow2 = useTransform(mobileRawProgress, [0, 0.38, 1], ['0 0 0px rgba(0,0,0,0)', '0 0 14px rgba(255,255,255,1)', '0 0 14px rgba(255,255,255,1)']);
+
+  const mobOpacity3 = useTransform(mobileRawProgress, [0.60, 0.70], [0, 1]);
+  const mobX3 = useTransform(mobileRawProgress, [0.60, 0.70], [20, 0]);
+  const mobNodeBg3 = useTransform(mobileRawProgress, [0, 0.68, 1], ['#27272a', '#ffffff', '#ffffff']);
+  const mobNodeShadow3 = useTransform(mobileRawProgress, [0, 0.68, 1], ['0 0 0px rgba(0,0,0,0)', '0 0 14px rgba(255,255,255,1)', '0 0 14px rgba(255,255,255,1)']);
+
+  const mobOpacity4 = useTransform(mobileRawProgress, [0.88, 0.96], [0, 1]);
+  const mobX4 = useTransform(mobileRawProgress, [0.88, 0.96], [20, 0]);
+  const mobNodeBg4 = useTransform(mobileRawProgress, [0, 0.95, 1], ['#27272a', '#ffffff', '#ffffff']);
+  const mobNodeShadow4 = useTransform(mobileRawProgress, [0, 0.95, 1], ['0 0 0px rgba(0,0,0,0)', '0 0 14px rgba(255,255,255,1)', '0 0 14px rgba(255,255,255,1)']);
+
+  const mobileTransforms = [
+    { opacity: mobOpacity1, x: mobX1, nodeBg: mobNodeBg1, nodeShadow: mobNodeShadow1 },
+    { opacity: mobOpacity2, x: mobX2, nodeBg: mobNodeBg2, nodeShadow: mobNodeShadow2 },
+    { opacity: mobOpacity3, x: mobX3, nodeBg: mobNodeBg3, nodeShadow: mobNodeShadow3 },
+    { opacity: mobOpacity4, x: mobX4, nodeBg: mobNodeBg4, nodeShadow: mobNodeShadow4 }
+  ];
+
+  return (
+    <section
+      ref={sectionRef}
+      id="slide-3-experience"
+      className="slide-section h-screen w-full relative overflow-hidden flex flex-col justify-between py-4 sm:py-6 px-4 sm:px-8 md:px-12 lg:px-20 bg-[#030305] snap-start select-none"
+    >
+      {/* Header Container */}
+      <div className="pt-4 md:pt-6 pb-2 text-center select-none shrink-0 z-20">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-syne font-black text-white tracking-tight text-center uppercase leading-none">
+          EDUCATION & EXPERIENCE
+        </h2>
+        <p className="text-xs text-zinc-400 mt-1 mb-2 max-w-sm mx-auto font-normal">
+          Verified academic qualifications, professional background & specialized software stack.
+        </p>
+      </div>
+
+      {/* Timeline Stage Container */}
+      <div className="relative w-full max-w-5xl mx-auto h-[320px] md:h-[360px] flex items-center justify-center my-auto select-none px-2 sm:px-4">
+        {!isMobile ? (
+          /* Desktop Stage (>= 768px): Full Block Alternating Timeline */
+          <div className="relative w-full h-full flex items-center justify-center z-20">
+            {/* Background Gray Guide Track */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-4 bottom-4 w-[2px] bg-zinc-800 z-0" />
+
+            {/* Active White Drawing Line */}
+            <motion.div
+              style={{ height: lineHeight }}
+              className="absolute left-1/2 -translate-x-1/2 top-4 w-[2px] bg-white shadow-[0_0_14px_rgba(255,255,255,1)] origin-top z-10 pointer-events-none"
+            />
+
+            {milestones.map((milestone, idx) => {
+              const t = desktopTransforms[idx];
+
+              return (
+                <div key={idx} className="absolute inset-0 flex items-center justify-center">
+                  {/* Glowing Circle Node */}
+                  <motion.div
+                    style={{
+                      backgroundColor: t.nodeBg,
+                      boxShadow: t.nodeShadow
+                    }}
+                    className={`absolute left-1/2 -translate-x-1/2 ${t.pos} -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-black z-30 transition-colors duration-300`}
+                  />
+
+                  {/* Cohesive Full Milestone Text Block */}
+                  <motion.div
+                    style={{ opacity: t.opacity, y: t.y }}
+                    className={`w-full flex items-center ${t.isLeft ? 'justify-start' : 'justify-end'}`}
+                  >
+                    <div
+                      className={`w-[calc(50%-2.5rem)] flex flex-col ${t.isLeft
+                          ? 'text-right items-end pr-8 sm:pr-12'
+                          : 'ml-auto text-left items-start pl-8 sm:pl-12'
+                        }`}
+                    >
+                      <span className="text-xs font-mono text-blue-400 font-bold tracking-wider uppercase mb-1 inline-block">
+                        {milestone.date}
+                      </span>
+                      <h3 className="text-lg sm:text-xl font-syne font-bold text-white leading-snug">
+                        {milestone.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm font-jakarta text-zinc-300 font-medium mt-0.5">
+                        {milestone.institution}
+                      </p>
+                      <p className="text-xs sm:text-sm font-jakarta text-zinc-400 leading-relaxed max-w-sm mt-2 font-normal">
+                        {milestone.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* Mobile Stage (< 768px): Left Line & Touch-Scroll Line Draw */
+          <div
+            ref={mobileContainerRef}
+            onScroll={handleMobileScroll}
+            className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar relative select-none pr-1"
+          >
+            {/* Left Background Gray Guide Line */}
+            <div className="absolute left-6 sm:left-8 top-4 bottom-12 w-[2px] bg-zinc-800 z-0" />
+
+            {/* Left Active White Drawing Line */}
+            <motion.div
+              style={{ height: mobileLineHeight }}
+              className="absolute left-6 sm:left-8 top-4 w-[2px] bg-white shadow-[0_0_12px_rgba(255,255,255,1)] origin-top z-10 pointer-events-none"
+            />
+
+            {/* Mobile Milestones Stack */}
+            <div className="space-y-8 pt-4 pb-12 relative z-20">
+              {milestones.map((milestone, idx) => {
+                const mt = mobileTransforms[idx];
+                return (
+                  <div key={idx} className="relative flex items-start w-full min-h-[140px] pl-12 sm:pl-16">
+                    {/* Node Dot on Left Line */}
+                    <motion.div
+                      style={{
+                        backgroundColor: mt.nodeBg,
+                        boxShadow: mt.nodeShadow
+                      }}
+                      className="absolute left-6 sm:left-8 top-2 -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 border-black z-30 transition-colors duration-300"
+                    />
+
+                    {/* Right-Side Text Block */}
+                    <motion.div style={{ opacity: mt.opacity, x: mt.x }} className="flex flex-col text-left">
+                      <span className="text-xs font-mono text-blue-400 font-bold uppercase block mb-0.5">
+                        {milestone.date}
+                      </span>
+                      <h3 className="text-base sm:text-lg font-syne font-bold text-white leading-snug">
+                        {milestone.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm font-jakarta text-zinc-300 font-medium mt-0.5">
+                        {milestone.institution}
+                      </p>
+                      <p className="text-xs sm:text-sm font-jakarta text-zinc-400 leading-relaxed mt-1 font-normal">
+                        {milestone.description}
+                      </p>
+                    </motion.div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Infinite Tool Marquee */}
+      <div className="mt-auto pb-4 shrink-0 z-20">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="relative w-full overflow-hidden py-1 select-none"
+          style={{
+            maskImage:
+              'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+            WebkitMaskImage:
+              'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+          }}
+        >
+          <div className="animate-marquee">
+            {[...marqueeItems, ...marqueeItems].map((item, idx) => {
+              const displayName = item.label || item.name;
+              const displayAbbr = item.abbr || displayName.slice(0, 2);
+              return (
+                <div
+                  key={idx}
+                  className="h-8 sm:h-10 px-3 sm:px-4 rounded-full bg-white/[0.04] border border-white/[0.08] hover:border-white/20 hover:bg-white/[0.08] backdrop-blur-md flex items-center gap-2 shrink-0 transition-all duration-300 shadow-sm mx-1.5 sm:mx-2 cursor-pointer group"
+                >
+                  <div
+                    className={`w-4 h-4 rounded-md flex items-center justify-center font-syne font-black text-[9px] ${item.color} ${item.bg || 'bg-white/10'}`}
+                  >
+                    {displayAbbr}
+                  </div>
+                  <span className="font-jakarta font-semibold text-xs text-zinc-300 group-hover:text-white tracking-tight">
+                    {displayName}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/slides/Slide8Contact.tsx">
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { PROFILE_DATA } from '../../data/portfolioData';
+import AnimatedDock, { DockItemData } from '../ui/animated-dock';
+import { LocationMap } from '../ui/expand-map';
+import { Mail, MessageCircle, Check, ArrowUp, Send, Download, Linkedin } from 'lucide-react';
+
+
+interface Slide8ContactProps {
+  onRestart: () => void;
+  activeSlide?: number;
+}
+
+export const Slide8Contact: React.FC<Slide8ContactProps> = ({
+  onRestart,
+}) => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const [copiedText, setCopiedText] = useState<string | null>(null);
+
+  const handleCopy = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedText(label);
+    setTimeout(() => setCopiedText(null), 2500);
+  };
+
+  const handleDownloadResume = () => {
+    try {
+      fetch(PROFILE_DATA.resumeUrl, { method: 'HEAD' })
+        .then((res) => {
+          if (!res.ok) {
+            setCopiedText('Resume coming soon');
+            setTimeout(() => setCopiedText(null), 2500);
+          }
+        })
+        .catch(() => {
+          setCopiedText('Resume coming soon');
+          setTimeout(() => setCopiedText(null), 2500);
+        });
+    } catch {
+      // Fallback
+    }
+  };
+
+  const dockItems: DockItemData[] = [
+    {
+      link: `mailto:${PROFILE_DATA.email}`,
+      Icon: <Send className="w-5 h-5 text-blue-400" />,
+      label: "Start a Project",
+      itemClassName: "bg-blue-600/20 hover:bg-blue-600/40 border-blue-500/40 shadow-[0_0_20px_rgba(37,99,235,0.4)]",
+    },
+    {
+      link: PROFILE_DATA.whatsappUrl,
+      target: "_blank",
+      Icon: <MessageCircle className="w-5 h-5 text-emerald-400" />,
+      label: "Chat on WhatsApp",
+      itemClassName: "bg-emerald-600/20 hover:bg-emerald-600/40 border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.4)]",
+    },
+    {
+      onClick: handleDownloadResume,
+      Icon: <Download className="w-5 h-5 text-cyan-400" />,
+      label: copiedText === 'Resume coming soon' ? 'Resume Requested' : 'Download CV',
+      itemClassName: "bg-cyan-600/20 hover:bg-cyan-600/40 border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.4)]",
+    },
+    {
+      link: PROFILE_DATA.linkedinUrl,
+      target: "_blank",
+      Icon: <Linkedin className="w-5 h-5 text-indigo-400" />,
+      label: "LinkedIn Profile",
+      itemClassName: "bg-indigo-600/20 hover:bg-indigo-600/40 border-indigo-500/40 shadow-[0_0_20px_rgba(99,102,241,0.4)]",
+    },
+    {
+      onClick: () => handleCopy(PROFILE_DATA.email, 'Email'),
+      Icon: copiedText === 'Email' ? <Check className="w-5 h-5 text-emerald-400" /> : <Mail className="w-5 h-5 text-purple-400" />,
+      label: copiedText === 'Email' ? 'Email Copied!' : 'Copy Email',
+      itemClassName: copiedText === 'Email' ? "bg-emerald-600/30 border-emerald-400" : "bg-purple-600/20 hover:bg-purple-600/40 border-purple-500/40 shadow-[0_0_20px_rgba(168,85,247,0.4)]",
+    },
+  ];
+
+  return (
+    <section
+      id="slide-8-contact"
+      className="slide-section min-h-[100dvh] md:h-screen w-full relative flex flex-col items-center justify-between overflow-y-auto md:overflow-hidden snap-start py-12 px-5 md:py-8 md:px-10 lg:px-16 bg-[#030305]"
+    >
+      {/* Top Header Metadata Bar */}
+      <div className="w-full max-w-6xl mx-auto flex items-center justify-end select-none z-20 pt-2">
+
+        <button
+          onClick={onRestart}
+          className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono tracking-[0.2em] text-zinc-400 hover:text-white transition-colors uppercase cursor-pointer py-1 px-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10"
+        >
+          <ArrowUp className="w-3.5 h-3.5" />
+          <span>Back to Top</span>
+        </button>
+      </div>
+
+      {/* Main Center Headline & Animated Dock */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 0.6, delay: isMobile ? 1 : 0.5 }}
+        className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center text-center z-10 my-auto py-6 select-none"
+      >
+        {/* CENTERPIECE TYPOGRAPHY */}
+        <div className="relative select-none flex flex-col items-center mb-10">
+          {/* Luminous Blue Radial Aura */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 sm:w-[500px] sm:h-[260px] rounded-full opacity-85 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(circle at center, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.75) 45%, rgba(56, 189, 248, 0.25) 75%, transparent 95%)',
+              filter: 'blur(45px)',
+            }}
+          />
+
+          <span className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-sm text-zinc-400 block mb-2 z-10">
+            Available For New Opportunities
+          </span>
+
+          {/* Headline "LET'S CREATE." */}
+          <h2
+            id="contact-headline"
+            className="relative z-10 font-syne font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight text-white uppercase leading-tight md:leading-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.9)]"
+            style={{ letterSpacing: '-0.03em' }}
+          >
+            LET'S CREATE.
+          </h2>
+
+          {/* Subtitle "MARKET. GROW." in high-contrast blue tracking */}
+          <h3 className="relative z-10 font-mono font-bold text-xl sm:text-2xl text-blue-400 tracking-[0.25em] uppercase mt-2">
+            MARKET. GROW.
+          </h3>
+
+          <p className="relative z-10 font-jakarta font-normal text-xs sm:text-sm tracking-wider text-zinc-300 max-w-lg mt-3 font-medium">
+            Transforming Creative Ideas into Digital Success
+          </p>
+        </div>
+
+        {/* FEEDBACK TOAST/STATUS BADGE */}
+        <AnimatePresence>
+          {copiedText && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              className="mb-4 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono text-xs flex items-center gap-2 shadow-lg backdrop-blur-md"
+            >
+              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <span>{copiedText === 'Email' ? 'Email copied to clipboard!' : copiedText}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* INTERACTIVE ACTIONS ROW (ANIMATED DOCK & LOCATION MAP SIDE-BY-SIDE) */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-6 w-full mt-2 mb-2 z-20">
+          <AnimatedDock items={dockItems} />
+          <LocationMap location="Muscat, Oman" coordinates="23.5880° N, 58.3829° E" />
+        </div>
+      </motion.div>
+
+      {/* GROUNDED PINNED FOOTER BAR */}
+      <footer className="w-full max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 pt-4 border-t border-white/10 text-[10px] sm:text-[11px] font-mono tracking-[0.2em] text-zinc-500 uppercase z-20 select-none pb-2">
+        <span>© 2026 Mohamed Imtiaz • Muscat, Sultanate of Oman</span>
+        <button
+          onClick={onRestart}
+          className="hover:text-white transition-colors cursor-pointer flex items-center gap-1"
+        >
+          <span>Back to Top</span>
+          <span>↑</span>
+        </button>
+      </footer>
+    </section>
+  );
+};
 </file>
 
 </files>

@@ -52,7 +52,7 @@ export const Slide7WhyMe: React.FC<Slide7WhyMeProps> = () => {
           <h2 className="font-syne font-extrabold text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-white tracking-tight uppercase leading-tight md:leading-none max-w-3xl mx-auto">
             CREATIVITY + STRATEGY = MEASURABLE GROWTH
           </h2>
-          <p className="font-jakarta font-normal text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto mt-2 leading-relaxed">
+          <p className="font-jakarta font-normal text-body-sm text-zinc-400 max-w-xl mx-auto mt-2 leading-relaxed">
             The strategic formula behind high-impact social media, performance ad campaigns, and commercial retainers.
           </p>
         </div>
@@ -70,25 +70,25 @@ export const Slide7WhyMe: React.FC<Slide7WhyMeProps> = () => {
               <TiltCard
                 max={8}
                 glare={true}
-                className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/20 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
+                className="p-4 sm:p-5 rounded-2xl bg-white/[0.045] border border-white/[0.12] hover:border-white/20 shadow-xl transition-all duration-300 h-full flex flex-col justify-between group"
               >
                 <div>
                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-3 shadow-md group-hover:scale-105 transition-transform">
                     {pillar.icon}
                   </div>
 
-                  <h3 className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug group-hover:text-blue-300 transition-colors">
+                  <h3 className="font-jakarta font-bold text-heading-sm text-white tracking-tight leading-snug group-hover:text-blue-300 transition-colors">
                     {pillar.title}
                   </h3>
 
-                  <p className="font-jakarta font-normal text-xs text-zinc-400 leading-relaxed mt-1.5 mb-4">
+                  <p className="font-jakarta font-normal text-body-sm text-zinc-400 leading-relaxed mt-1.5 mb-4">
                     {pillar.description}
                   </p>
                 </div>
 
                 <ul className="space-y-1.5 pt-3 border-t border-white/5">
                   {pillar.highlights.map((item, hIdx) => (
-                    <li key={hIdx} className="font-jakarta text-[11px] text-zinc-400 flex items-center gap-1.5 font-normal">
+                    <li key={hIdx} className="font-jakarta text-body-sm text-zinc-300 flex items-center gap-1.5 font-normal">
                       <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                       <span>{item}</span>
                     </li>

@@ -54,13 +54,13 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
         {/* LEFT COLUMN: CUTOUT PORTRAIT OVER BLUE SPOTLIGHT */}
         <div className="flex flex-col items-center lg:items-start shrink-0">
           <div className="mb-4 text-center lg:text-left">
-            <span className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-[11px] block mb-1">
+            <span className="font-mono text-label tracking-[0.25em] uppercase font-semibold text-blue-400 block mb-1">
               Hello, I am
             </span>
             <h2 className="font-syne font-extrabold text-2xl sm:text-3xl lg:text-5xl text-white tracking-tight leading-tight md:leading-none">
               {PROFILE_DATA.name}
             </h2>
-            <p className="font-jakarta text-[11px] sm:text-xs text-zinc-400 mt-1.5 font-medium max-w-xs">
+            <p className="font-jakarta text-body-sm text-zinc-400 mt-1.5 font-medium max-w-xs">
               {PROFILE_DATA.role}
             </p>
           </div>
@@ -99,14 +99,14 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
               <span>About Me</span>
               <span className="w-2 h-2 rounded-full bg-blue-500" />
             </h3>
-            <p className="font-jakarta font-normal text-xs sm:text-[13px] text-zinc-300 leading-relaxed font-normal">
+            <p className="font-jakarta font-normal text-body-sm text-zinc-300 leading-relaxed">
               {PROFILE_DATA.about}
             </p>
           </div>
 
           {/* 2x2 BENTO GRID VALUE PROPOSITION */}
           <div>
-            <h4 className="font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 mb-3 flex items-center gap-1.5">
+            <h4 className="font-jakarta text-label font-semibold text-blue-400 mb-3 flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-blue-400" />
               <span>Core Expertise & Focus</span>
             </h4>
@@ -126,10 +126,10 @@ export const Slide2About: React.FC<Slide2AboutProps> = () => {
                       <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-md">
                         {card.icon}
                       </div>
-                      <h5 className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug group-hover:text-blue-300 transition-colors">
+                      <h5 className="font-jakarta font-bold text-body text-white tracking-tight leading-snug group-hover:text-blue-300 transition-colors">
                         {card.title}
                       </h5>
-                      <p className="font-jakarta font-normal text-xs text-zinc-300 leading-relaxed mt-1.5">
+                      <p className="font-jakarta font-normal text-body-sm text-zinc-300 leading-relaxed mt-1.5">
                         {card.description}
                       </p>
                     </div>

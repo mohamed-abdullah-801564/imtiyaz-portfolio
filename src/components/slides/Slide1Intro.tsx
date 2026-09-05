@@ -28,7 +28,7 @@ export const Slide1Intro: React.FC<Slide1IntroProps> = ({ onExplore }) => {
       >
         <h1
           id="hero-title"
-          className="font-sans font-black text-3xl sm:text-5xl md:text-8xl lg:text-9xl tracking-tight text-white leading-none flex items-center justify-center"
+          className="font-syne font-black text-3xl sm:text-5xl md:text-8xl lg:text-9xl tracking-tight text-white leading-none flex items-center justify-center"
           style={{ letterSpacing: '-0.03em' }}
         >
           PORTFOLIO
@@ -37,7 +37,7 @@ export const Slide1Intro: React.FC<Slide1IntroProps> = ({ onExplore }) => {
             aria-hidden="true"
           />
         </h1>
-        <p className="font-mono text-xs sm:text-sm md:text-base text-blue-400 tracking-[0.2em] sm:tracking-[0.3em] uppercase font-semibold mt-4">
+        <p className="font-mono text-label text-blue-400 tracking-[0.25em] uppercase font-semibold mt-4">
           {PROFILE_DATA.tagline}
         </p>
       </motion.div>
@@ -45,10 +45,10 @@ export const Slide1Intro: React.FC<Slide1IntroProps> = ({ onExplore }) => {
       {/* Bottom Container: Name + Role on Left, Scroll on Right */}
       <div className="w-full max-w-6xl mx-auto flex items-end justify-between z-20 select-none pb-2 md:pb-8 md:px-6">
         <div className="text-left">
-          <p className="text-xs sm:text-sm font-sans font-semibold text-white/90">
+          <p className="text-body-sm font-jakarta font-semibold text-white/90">
             {PROFILE_DATA.name}
           </p>
-          <p className="text-[10px] sm:text-[11px] font-mono text-zinc-400 mt-0.5">
+          <p className="text-label font-jakarta text-zinc-400 mt-0.5">
             {PROFILE_DATA.role} • {PROFILE_DATA.location}
           </p>
         </div>
@@ -59,7 +59,7 @@ export const Slide1Intro: React.FC<Slide1IntroProps> = ({ onExplore }) => {
           className="flex items-center gap-2 group cursor-pointer text-zinc-500 hover:text-white transition-colors select-none"
           aria-label="Scroll to next slide"
         >
-          <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase text-zinc-600 group-hover:text-zinc-400 transition-colors">
+          <span className="text-label font-jakarta font-semibold uppercase text-zinc-500 group-hover:text-zinc-300 transition-colors">
             Scroll
           </span>
           <span className="w-1.5 h-1.5 rounded-full bg-blue-500 group-hover:bg-cyan-400 group-hover:scale-125 transition-all" />

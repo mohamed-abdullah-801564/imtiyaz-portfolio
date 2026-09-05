@@ -52,7 +52,7 @@ export const SlideNav: React.FC<SlideNavProps> = ({
                 }`}
               />
               {/* Tooltip on hover */}
-              <span className="absolute right-7 px-2 py-0.5 text-[10px] tracking-widest font-mono text-zinc-400 bg-zinc-900/90 border border-white/10 rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">
+              <span className="absolute right-7 px-2 py-0.5 text-label font-jakarta font-medium text-zinc-300 bg-zinc-900/90 border border-white/10 rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">
                 0{idx + 1}
               </span>
             </button>
@@ -72,7 +72,7 @@ export const SlideNav: React.FC<SlideNavProps> = ({
       </button>
 
       {/* Minimal Numeric Slide Counter */}
-      <div className="mt-1 text-[10px] font-mono tracking-widest text-zinc-500">
+      <div className="mt-1 text-label font-jakarta font-medium text-zinc-500">
         0{currentSlide + 1}
       </div>
     </div>

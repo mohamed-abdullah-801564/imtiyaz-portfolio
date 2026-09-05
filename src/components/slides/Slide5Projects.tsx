@@ -29,20 +29,20 @@ export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
         {/* Header */}
         <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-900/80 to-zinc-900 border border-blue-500/40 flex items-center justify-center text-white font-syne font-black text-sm sm:text-base tracking-wider shadow-lg shrink-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-blue-900/80 to-zinc-900 border border-blue-500/40 flex items-center justify-center text-white font-syne font-black text-body tracking-wider shadow-lg shrink-0">
               MS
             </div>
             <div>
               <h2 className="font-syne font-extrabold text-2xl sm:text-3xl md:text-2xl lg:text-3xl text-white tracking-tight uppercase leading-tight md:leading-none">
                 MS MAX & CLIENT CAMPAIGNS
               </h2>
-              <p className="font-jakarta font-normal text-xs sm:text-[13px] text-zinc-400 max-w-2xl leading-snug mt-1 font-normal">
+              <p className="font-jakarta font-normal text-body-sm text-zinc-400 max-w-2xl leading-snug mt-1">
                 Creative Design, Ad Creatives & Social Content
               </p>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 font-mono text-[10px] tracking-[0.25em] uppercase font-semibold text-blue-400 sm:text-[11px]">
+          <div className="hidden sm:flex items-center gap-2 text-label font-jakarta font-semibold text-blue-400">
             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
             <span>Verified Commercial Work</span>
           </div>
@@ -67,7 +67,7 @@ export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.7, delay: 0.5 + (idx * 0.15) }}
-                className="group relative rounded-2xl border border-white/[0.08] hover:border-white/20 bg-white/[0.03] hover:bg-zinc-900/80 overflow-hidden backdrop-blur-md shadow-2xl hover:-translate-y-1.5 transition-all duration-300 aspect-[4/3] sm:aspect-square md:h-44 cursor-pointer p-2.5 sm:p-3 flex flex-col justify-between"
+                className="group relative rounded-2xl border border-white/[0.12] hover:border-white/20 bg-white/[0.045] hover:bg-zinc-900/80 overflow-hidden backdrop-blur-md shadow-2xl hover:-translate-y-1.5 transition-all duration-300 aspect-[4/3] sm:aspect-square md:h-44 cursor-pointer p-2.5 sm:p-3 flex flex-col justify-between"
               >
                 {isWhiteBgLogo ? (
                   /* Inner White Container - Seamless logo fit */
@@ -75,7 +75,7 @@ export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                      className="max-w-full max-h-full object-contain group-hover:scale-[1.03] transition-transform duration-500 ease-out"
                     />
                   </div>
                 ) : (
@@ -84,20 +84,20 @@ export const Slide5Projects: React.FC<Slide5ProjectsProps> = ({
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
                     />
                   </div>
                 )}
 
-                {/* Hover Glass Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 z-20 pointer-events-none rounded-2xl">
-                  <span className="font-jakarta text-[11px] text-zinc-400 group-hover:text-zinc-200 block">
+                {/* Hover Glass Overlay with Slide-Up Transform */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-transparent opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out flex flex-col justify-end p-3.5 z-20 pointer-events-none rounded-2xl">
+                  <span className="font-jakarta text-label text-zinc-400 group-hover:text-zinc-200 block">
                     {project.client}
                   </span>
-                  <p className="font-jakarta font-bold text-sm text-white tracking-tight leading-snug mt-1 line-clamp-2">
+                  <p className="font-jakarta font-bold text-body text-white tracking-tight leading-snug mt-0.5 line-clamp-2">
                     {project.title}
                   </p>
-                  <div className="mt-1 flex items-center gap-1.5 text-[11px] font-mono text-zinc-400 group-hover:text-white">
+                  <div className="mt-1.5 flex items-center gap-1.5 text-label font-jakarta font-medium text-zinc-300 group-hover:text-white">
                     <Eye className="w-3.5 h-3.5 text-blue-400" />
                     <span>Click to View</span>
                   </div>

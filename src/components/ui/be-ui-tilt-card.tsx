@@ -133,7 +133,7 @@ export function TiltCard({
       onClick={onClick}
       style={{ transform, transformStyle: "preserve-3d" }}
       className={cn(
-        "relative overflow-hidden rounded-2xl will-change-transform cursor-pointer select-none",
+        "relative overflow-hidden rounded-2xl border border-white/[0.12] bg-white/[0.045] hover:border-white/20 transition-all duration-300 will-change-transform cursor-pointer select-none",
         className,
       )}
     >
